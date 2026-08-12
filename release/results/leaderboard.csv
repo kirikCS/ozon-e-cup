@@ -1,0 +1,13 @@
+#,file,what,LB
+1,sub3_nnls_isotonic_blend,best on validation (1.6679),1.6836226427909342
+2,sub1_lgbm_dart,LightGBM DART,1.672341791651013
+3,sub2_two_stage_btyd,worst of the first three on validation,1.6577724728425334
+4,sub5_two_stage_shift_c0190,"sub2, log-shift +0.190",1.657064821153091
+5,sub4_two_stage_shift_c0105,"sub2, log-shift +0.105",1.6546867486238441
+6,sub8_catboost_rmse_log1p_shifted,"CatBoost, level-matched",1.6534269025124644
+7,sub11_blend_sub4_sub8,"blend, weights solved analytically",1.6524998892235196
+8,blend_slope085,slope probe (deliberately off-optimum),1.6781228504796855
+9,ols_stack,unconstrained stack of 4 vectors,1.6508949682829253
+10,eb_logblocks,decorrelation probe,1.7009172654286824
+11,seq_hybrid,dilated CNN over the daily panel,1.6541075222
+-,stack6,stack of 6 vectors (predicted),1.649598

@@ -1,0 +1,1297 @@
+<title>EDA · Прогноз 30-дневного GMV — Ozon E-CUP</title>
+
+<script id="eda-data" type="application/json">__DATA__</script>
+
+<style>
+/* ============================================================ tokens */
+:root{
+  color-scheme: light;
+  --ground:#f5f7fa;      --surface:#ffffff;     --surface-2:#eef2f7;   --surface-3:#e6ebf2;
+  --ink:#0d1117;         --ink-2:#47525f;       --ink-3:#79848f;
+  --rule:#e0e6ee;        --rule-strong:#ccd5e0;
+  --accent:#2a78d6;      --accent-soft:#e8f0fc;
+  --alert:#eb6834;       --alert-soft:#fdeee7;
+  --aqua:#1baf7a;        --aqua-soft:#e5f6ef;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --hm0:#eef3fa; --hm1:#cde2fb; --hm2:#9ec5f4; --hm3:#6da7ec; --hm4:#3987e5; --hm5:#256abf; --hm6:#184f95; --hm7:#0d366b;
+  --hm-ink-flip:4;
+  --shadow:0 1px 2px rgba(13,17,23,.05), 0 8px 24px -16px rgba(13,17,23,.22);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0c1015;    --surface:#141a22;     --surface-2:#1b222c;   --surface-3:#232b36;
+    --ink:#e9eef4;       --ink-2:#a0abb9;       --ink-3:#6e7a88;
+    --rule:#232b36;      --rule-strong:#323c49;
+    --accent:#3987e5;    --accent-soft:#16283f;
+    --alert:#d95926;     --alert-soft:#331c12;
+    --aqua:#199e70;      --aqua-soft:#0f2b22;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --hm0:#161d26; --hm1:#183050; --hm2:#1c4a80; --hm3:#2263a8; --hm4:#2f7ccb; --hm5:#5598e7; --hm6:#86b6ef; --hm7:#b7d3f6;
+    --hm-ink-flip:4;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0c1015;      --surface:#141a22;     --surface-2:#1b222c;   --surface-3:#232b36;
+  --ink:#e9eef4;         --ink-2:#a0abb9;       --ink-3:#6e7a88;
+  --rule:#232b36;        --rule-strong:#323c49;
+  --accent:#3987e5;      --accent-soft:#16283f;
+  --alert:#d95926;       --alert-soft:#331c12;
+  --aqua:#199e70;        --aqua-soft:#0f2b22;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  --hm0:#161d26; --hm1:#183050; --hm2:#1c4a80; --hm3:#2263a8; --hm4:#2f7ccb; --hm5:#5598e7; --hm6:#86b6ef; --hm7:#b7d3f6;
+  --hm-ink-flip:4;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+}
+
+/* ============================================================ base */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:15.5px; line-height:1.62; letter-spacing:-0.003em;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace}
+h1,h2,h3,h4,.eyebrow,.tile-v,.chip,th,.axis,.legend,.badge{
+  font-family:ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
+
+/* ============================================================ shell */
+.wrap{max-width:1420px;margin:0 auto;padding:0 24px 96px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+main{min-width:0}
+@media(min-width:1120px){
+  .grid{grid-template-columns:216px minmax(0,1fr);gap:52px;align-items:start}
+  .rail{position:sticky;top:0;max-height:100vh;overflow-y:auto;padding:36px 0 40px}
+}
+.rail{display:none}
+@media(min-width:1120px){.rail{display:block}}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.rail a{
+  display:grid;grid-template-columns:30px 1fr;gap:8px;align-items:baseline;
+  padding:6px 8px;border-radius:5px;text-decoration:none;color:var(--ink-2);
+  font-size:12.5px;line-height:1.35;transition:background .12s,color .12s;
+}
+.rail a:hover{background:var(--surface-2);color:var(--ink)}
+.rail a.on{background:var(--accent-soft);color:var(--ink)}
+.rail .n{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--ink-3);letter-spacing:.04em}
+.rail h4{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 12px 8px;font-weight:600}
+
+/* ============================================================ masthead */
+.mast{padding:44px 0 0;border-bottom:1px solid var(--rule);margin-bottom:34px}
+.eyebrow{font-size:10.5px;letter-spacing:.19em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 16px}
+.mast h1{
+  font-size:clamp(28px,4.1vw,46px);line-height:1.06;letter-spacing:-0.035em;font-weight:680;
+  margin:0 0 18px;max-width:19ch;text-wrap:balance;
+}
+.deck{font-size:17px;line-height:1.55;color:var(--ink-2);max-width:64ch;margin:0 0 26px}
+.deck b{color:var(--ink);font-weight:600}
+.mast-meta{
+  display:flex;flex-wrap:wrap;gap:6px 20px;font-size:11.5px;color:var(--ink-3);
+  font-family:ui-monospace,Menlo,monospace;letter-spacing:.01em;margin:0 0 22px;
+}
+.mast-meta span{white-space:nowrap}
+.mast-meta b{color:var(--ink-2);font-weight:600}
+.hero-plot{margin:0 -4px 0}
+
+/* ============================================================ tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);border-radius:10px;overflow:hidden;margin:0 0 46px}
+.tile{background:var(--surface);padding:15px 16px 14px}
+.tile-k{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
+  font-family:ui-monospace,Menlo,monospace;margin:0 0 7px}
+.tile-v{font-size:25px;line-height:1;font-weight:640;letter-spacing:-0.028em;color:var(--ink);margin:0 0 5px}
+.tile-v .u{font-size:14px;font-weight:500;color:var(--ink-2);letter-spacing:0}
+.tile-s{font-size:11.5px;color:var(--ink-3);line-height:1.35;margin:0}
+
+/* ============================================================ sections */
+section{scroll-margin-top:20px;margin:0 0 58px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin:0 0 6px;padding-top:6px;border-top:2px solid var(--ink);}
+.sec-n{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--ink-3);letter-spacing:.05em;padding-top:5px}
+h2{font-size:24px;line-height:1.2;letter-spacing:-0.03em;font-weight:660;margin:0;text-wrap:balance}
+.sec-lede{color:var(--ink-2);max-width:68ch;margin:12px 0 24px;font-size:15px}
+h3{font-size:15px;letter-spacing:-0.012em;font-weight:640;margin:34px 0 10px}
+p{max-width:68ch;margin:0 0 14px}
+.note{max-width:68ch;font-size:13.5px;color:var(--ink-2);margin:12px 0 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:var(--surface-2);
+  padding:1.5px 5px;border-radius:4px;color:var(--ink)}
+
+/* ============================================================ findings */
+.finds{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.find{background:var(--surface);display:grid;grid-template-columns:52px 1fr;gap:14px;padding:14px 16px;
+  text-decoration:none;color:inherit;transition:background .12s}
+.find:hover{background:var(--surface-2)}
+.find .fid{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--ink-3);letter-spacing:.05em;padding-top:3px}
+.find .ft{font-weight:600;font-size:14.5px;letter-spacing:-0.012em;margin:0 0 3px;display:flex;
+  align-items:center;gap:8px;flex-wrap:wrap}
+.find .fd{font-size:13.5px;color:var(--ink-2);margin:0;line-height:1.5;max-width:none}
+.chip{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;
+  padding:2.5px 7px;border-radius:4px;white-space:nowrap}
+.chip.crit{background:var(--alert-soft);color:var(--alert);box-shadow:inset 0 0 0 1px currentColor}
+.chip.ok{background:var(--aqua-soft);color:var(--aqua);box-shadow:inset 0 0 0 1px currentColor}
+.chip.info{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 1px currentColor}
+
+/* ============================================================ callout */
+.callout{border-left:3px solid var(--alert);background:var(--alert-soft);padding:14px 18px;
+  border-radius:0 8px 8px 0;margin:20px 0}
+.callout.acc{border-color:var(--accent);background:var(--accent-soft)}
+.callout p{margin:0;max-width:66ch;font-size:14.5px}
+.callout p + p{margin-top:9px}
+.callout .lbl{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;color:var(--alert)}
+.callout.acc .lbl{color:var(--accent)}
+
+/* ============================================================ cards + charts */
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:10px;
+  padding:18px 18px 14px;margin:0 0 20px;box-shadow:var(--shadow)}
+.card-h{margin:0 0 2px;font-size:14px;font-weight:640;letter-spacing:-0.012em;
+  font-family:ui-monospace,Menlo,monospace}
+.card-s{margin:0 0 14px;font-size:12.5px;color:var(--ink-3);max-width:70ch;line-height:1.45}
+.plot{width:100%;position:relative}
+.plot svg{display:block;width:100%;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0 0;font-size:11.5px;color:var(--ink-2)}
+.legend i{display:inline-block;width:11px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.legend i.sq{height:10px;width:10px;border-radius:2.5px}
+.two{display:grid;gap:20px}
+@media(min-width:840px){.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+
+.tip{position:absolute;pointer-events:none;z-index:30;opacity:0;transform:translate(-50%,-115%);
+  background:var(--surface);border:1px solid var(--rule-strong);border-radius:7px;padding:7px 10px;
+  box-shadow:var(--shadow);font-size:11.5px;font-family:ui-monospace,Menlo,monospace;
+  white-space:nowrap;color:var(--ink);transition:opacity .09s;line-height:1.5}
+.tip .th{color:var(--ink-3);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+  display:block;margin-bottom:3px}
+.tip .tr{display:flex;justify-content:space-between;gap:14px}
+.tip .tr b{font-weight:640;font-variant-numeric:tabular-nums}
+.tip .tr i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:baseline}
+
+/* ============================================================ tables */
+details.tv{margin:12px 0 0}
+details.tv > summary{
+  cursor:pointer;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);list-style:none;display:inline-flex;align-items:center;gap:6px;
+  padding:4px 9px;border:1px solid var(--rule);border-radius:5px;user-select:none;background:var(--surface-2)}
+details.tv > summary::-webkit-details-marker{display:none}
+details.tv > summary:hover{color:var(--ink);border-color:var(--rule-strong)}
+details.tv > summary::before{content:"▸";font-size:9px;transition:transform .15s}
+details.tv[open] > summary::before{transform:rotate(90deg)}
+.tscroll{overflow-x:auto;margin:12px 0 2px;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+th{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:600;
+  text-align:right;padding:9px 12px;border-bottom:1px solid var(--rule-strong);white-space:nowrap;
+  background:var(--surface-2);position:sticky;top:0}
+th:first-child,td:first-child{text-align:left}
+td{padding:7px 12px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap;color:var(--ink-2)}
+td:first-child{color:var(--ink);font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface-2)}
+tr.hi td{background:var(--alert-soft)}
+tr.hi:hover td{background:var(--alert-soft)}
+tr.hi td:first-child{color:var(--alert);font-weight:600}
+tr.hi2 td{background:var(--accent-soft)}
+tr.hi2:hover td{background:var(--accent-soft)}
+.pos{color:var(--aqua);font-weight:600}
+.neg{color:var(--alert);font-weight:600}
+.cap{font-size:11.5px;color:var(--ink-3);margin:8px 0 0;max-width:78ch}
+
+/* ============================================================ list */
+ul.act{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:1px;background:var(--rule);
+  border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+ul.act li{background:var(--surface);padding:13px 16px;display:grid;grid-template-columns:26px 1fr;gap:12px}
+ul.act .m{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--accent);padding-top:3px;font-weight:600}
+ul.act b{font-weight:640}
+ul.act p{margin:4px 0 0;font-size:13.5px;color:var(--ink-2);max-width:none}
+ul.plain{margin:10px 0 14px;padding-left:20px;max-width:68ch}
+ul.plain li{margin:0 0 6px}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 18px;font-size:13px;margin:14px 0 0;
+  font-family:ui-monospace,Menlo,monospace}
+.kv dt{color:var(--ink-3)}
+.kv dd{margin:0;color:var(--ink);font-variant-numeric:tabular-nums}
+
+footer{border-top:1px solid var(--rule);margin-top:20px;padding-top:20px;font-size:12px;color:var(--ink-3);
+  font-family:ui-monospace,Menlo,monospace;display:flex;flex-wrap:wrap;gap:6px 22px}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<div class="grid">
+
+<nav class="rail" aria-label="Разделы">
+  <h4>Разделы</h4>
+  <ol id="rail"></ol>
+</nav>
+
+<main>
+
+<header class="mast">
+  <p class="eyebrow">Ozon E-CUP · Search LTV · разведочный анализ</p>
+  <h1>Суммарный GMV клиента на 30 дней вперёд</h1>
+  <p class="deck">Полный EDA по 30.6 млн записей о поведении 250 000 клиентов. Разбор целостности данных,
+  разреженности панели, <b>скрытого критерия отбора пользователей</b>, устройства целевой переменной,
+  силы предикторов и потолка качества по метрике RMSLE.</p>
+  <div class="mast-meta">
+    <span><b>30 631 006</b> строк</span>
+    <span><b>250 000</b> клиентов</span>
+    <span><b>409</b> дней · 2025-01-01 → 2026-02-13</span>
+    <span>прогноз: <b>2026-02-14 → 2026-03-15</b></span>
+    <span>метрика: <b>RMSLE</b> (log1p)</span>
+  </div>
+  <div class="plot hero-plot" id="p-hero"></div>
+  <div class="legend" id="l-hero"></div>
+</header>
+
+<div class="tiles" id="tiles"></div>
+
+<!-- ============================================ 00 findings -->
+<section id="s0">
+  <div class="sec-head"><span class="sec-n">00</span><h2>Что показал анализ</h2></div>
+  <p class="sec-lede">Десять находок, отсортированных по влиянию на итоговое решение. Каждая ведёт в свой раздел
+  с числами и графиками.</p>
+  <div class="finds" id="finds"></div>
+</section>
+
+<!-- ============================================ 01 integrity -->
+<section id="s1">
+  <div class="sec-head"><span class="sec-n">01</span><h2>Целостность: данные чистые, половина колонок избыточна</h2></div>
+  <p class="sec-lede">Ни одного пропуска, ни одного дубликата пары <code>(user_id, event_date)</code>, ни одного
+  нарушения арифметики. Это позволяет сразу выбросить производные колонки и сжать датасет.</p>
+
+  <div class="tscroll"><table id="t-integrity"></table></div>
+  <p class="cap">Все 13 проверок пройдены на полных 30.6 млн строк.</p>
+
+  <h3>Точные тождества между колонками</h3>
+  <p>Проверено построчно, отклонений <b>ровно ноль</b>:</p>
+  <dl class="kv">
+    <dt>gmv</dt><dd>= gmv_search + gmv_cat</dd>
+    <dt>to_cart</dt><dd>= search_to_cart + cat_to_cart</dd>
+    <dt>to_ord</dt><dd>= search_to_ord + cat_to_ord</dd>
+    <dt>has_*_to_*</dt><dd>= 1[соответствующий счётчик &gt; 0]</dd>
+    <dt>gmv &gt; 0</dt><dd>⇔ to_ord &gt; 0 (совпадает на всех 30.6 млн строк)</dd>
+    <dt>to_ord</dt><dd>≤ to_cart всегда (в разрезе каждого канала тоже)</dd>
+  </dl>
+  <div class="callout acc"><span class="lbl">Следствие</span>
+    <p>Из 18 колонок независимы только 9: <code>event_date, user_id, search, cat, search_to_cart,
+    search_to_ord, cat_to_cart, cat_to_ord</code> + два GMV. Четыре <code>has_*</code>-флага и три
+    суммарные колонки (<code>to_cart, to_ord, gmv</code>) восстанавливаются точно. Плюс приведение типов
+    (счётчики влезают в <code>Int16</code>, max = 1535) — <b>parquet сжимается со 180 МБ до ~120 МБ,
+    а в RAM с 4.4 ГБ до ~1.1 ГБ</b>.</p></div>
+
+  <h3>Профиль колонок</h3>
+  <div class="tscroll"><table id="t-cols"></table></div>
+  <p class="cap">Квантили считались по всем строкам, включая нулевые. Столбец «≠0» — доля ненулевых значений.</p>
+
+  <h3>Аномалия: 15% строк — это пустые визиты</h3>
+  <p>4 667 981 строка (15.2%) имеет <code>search = 0</code> и <code>cat = 0</code>. Из них 4 549 561 строка
+  вообще не содержит активности: ни поисков, ни корзины, ни заказов, ни GMV. Ещё 1 025 881 строка имеет
+  <code>cat = 1</code>, но нулевую активность — заход в каталог без действий.</p>
+  <p>Итого <b>5 575 442 строки (18.2%) полностью нулевые</b>. Это не мусор: сам факт наличия строки — сигнал
+  «пользователь был на площадке в этот день». Отсюда важное различие в фичах: <b>дней-визитов</b> (есть строка)
+  и <b>дней-активности</b> (есть флаг канала).</p>
+  <p>Обратный случай тоже есть: 118 420 строк без флагов канала, но с активностью, из них 33 тыс. с покупками
+  на 1.47 млн GMV (0.54% всего GMV) — покупки без поиска и каталога в этот день.</p>
+  <div class="tscroll"><table id="t-channels"></table></div>
+  <p class="cap">Кросс-таблица флагов каналов. <code>searches</code> строго равен нулю при <code>search = 0</code>
+  и строго положителен при <code>search = 1</code> — флаг полностью производный.</p>
+</section>
+
+<!-- ============================================ 02 sparsity -->
+<section id="s2">
+  <div class="sec-head"><span class="sec-n">02</span><h2>Разреженность: 30% ячеек панели заполнено</h2></div>
+  <p class="sec-lede">250 000 клиентов × 409 дней = 102.25 млн ячеек. Заполнено 30 631 006 (29.96%).
+  Полная «дозаливка» нулями раздует данные в 3.3 раза — но плотная матрица на самом деле помещается в память.</p>
+
+  <div class="callout acc"><span class="lbl">Приём, который окупился</span>
+    <p>Плотная матрица <code>250 000 × 409</code> из <code>float32</code> занимает <b>409 МБ</b>, из
+    <code>int16</code> — 205 МБ. Весь EDA в этом отчёте посчитан на 5 таких матрицах (GMV, заказы, поиски,
+    корзина, визиты) — 1.1 ГБ RAM. Любая оконная агрегация — это срез + <code>cumsum</code>, то есть
+    доли секунды вместо минут на group_by. На сервере с 129 ГБ RAM ограничений нет вообще.</p></div>
+
+  <div class="card">
+    <p class="card-h">Распределение числа дней с записью на пользователя</p>
+    <p class="card-s">Медиана — 102 дня из 409. Ни один пользователь не имеет меньше 3 записей.</p>
+    <div class="plot" id="p-visitdays"></div>
+    <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-visitdays"></table></div></details>
+  </div>
+
+  <div class="tscroll"><table id="t-udist"></table></div>
+  <p class="cap">Распределения пользовательских агрегатов за весь период. <code>recency</code> — дней с последней
+  записи на 2026-02-13; обратите внимание на максимум.</p>
+
+  <p class="note">51.8% пользователей имеют где-то в истории перерыв длиннее 30 дней, 30.3% — длиннее 60 дней.
+  Медиана максимального перерыва — 32 дня. Ряды рваные, и это нужно учитывать при построении лагов.</p>
+</section>
+
+<!-- ============================================ 03 time -->
+<section id="s3">
+  <div class="sec-head"><span class="sec-n">03</span><h2>Временная динамика: рост, декабрьский пик, январский провал</h2></div>
+  <p class="sec-lede">Дневной GMV вырос с ~0.47 млн в январе 2025 до ~0.93 млн в декабре 2025. Значительная часть
+  этого «роста» — артефакт отбора пользователей (раздел 04), а не реальная динамика площадки.</p>
+
+  <div class="card">
+    <p class="card-h">Дневной GMV, 2025-01-01 → 2026-02-13</p>
+    <p class="card-s">Тонкая линия — сырое дневное значение, толстая — скользящее среднее за 7 дней.
+    Штриховкой отмечено прогнозируемое окно, для которого данных нет.</p>
+    <div class="plot" id="p-daily"></div>
+    <div class="legend" id="l-daily"></div>
+    <details class="tv"><summary>Таблица · экстремумы</summary><div class="tscroll"><table id="t-days"></table></div></details>
+  </div>
+
+  <div class="card">
+    <p class="card-h">Активные пользователи и покупатели по дням</p>
+    <p class="card-s">Скользящее среднее за 7 дней. Расхождение линий — доля визитов, доходящих до покупки.</p>
+    <div class="plot" id="p-users"></div>
+    <div class="legend" id="l-users"></div>
+  </div>
+
+  <h3>Помесячная сводка</h3>
+  <div class="tscroll"><table id="t-monthly"></table></div>
+  <p class="cap">Февраль 2026 — неполный месяц (13 дней). Средний чек за товар падает монотонно: 36.2 → 29.7.</p>
+
+  <div class="two">
+    <div class="card">
+      <p class="card-h">Индекс дня недели</p>
+      <p class="card-s">Средний дневной GMV относительно общего среднего. Эффект слабый: разброс ±3%.</p>
+      <div class="plot" id="p-dow"></div>
+      <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-dow"></table></div></details>
+    </div>
+    <div class="card">
+      <p class="card-h">Интервал между покупками</p>
+      <p class="card-s">Распределение промежутков между соседними днями с покупкой, 4.52 млн наблюдений.</p>
+      <div class="plot" id="p-gap"></div>
+      <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-gap"></table></div></details>
+    </div>
+  </div>
+  <p class="note">Медианный интервал между покупками — <b>5 дней</b>, среднее — 13.0. Но по пользователям
+  медиана среднего интервала — 19.4 дня, а у 25% она больше 37 дней. То есть для четверти клиентов
+  30-дневное окно прогноза короче их обычного цикла покупки — для них задача принципиально вероятностная.</p>
+</section>
+
+<!-- ============================================ 04 selection -->
+<section id="s4">
+  <div class="sec-head"><span class="sec-n">04</span><h2>Критерий отбора пользователей восстановлен</h2></div>
+  <p class="sec-lede">Самая важная находка отчёта. 250 000 клиентов отобраны не случайно: каждый активен
+  в <b>каждом</b> из трёх последних 30-дневных блоков. Это меняет и постановку валидации, и трактовку роста.</p>
+
+  <div class="card">
+    <p class="card-h">Доля активных пользователей по 30-дневным блокам, отсчитанным от 2026-02-13</p>
+    <p class="card-s">Три последних блока — ровно 100.0000%. Четвёртый — 93.26%, и дальше монотонно вниз.
+    Такой обрыв невозможен естественным образом.</p>
+    <div class="plot" id="p-blocks"></div>
+    <div class="legend" id="l-blocks"></div>
+    <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-blocks"></table></div></details>
+  </div>
+
+  <div class="callout"><span class="lbl">Три следствия</span>
+    <p><b>1. Рост в данных частично фиктивный.</b> Пользователи отобраны по активности в конце периода,
+    поэтому к концу истории выборка «сгущается» по построению. Число уникальных активных за месяц растёт
+    189k → 247k, но 75.8% всех клиентов присутствуют с января 2025. Тренд нельзя брать за чистую монету.</p>
+    <p><b>2. Валидация на последнем окне оптимистична.</b> Целевое окно <code>2026-01-15 … 2026-02-13</code> —
+    это ровно то окно, по которому шёл отбор. В нём активны 100% пользователей по построению. В реальном
+    тестовом окне так не будет.</p>
+    <p><b>3. Насколько оптимистична — измеримо.</b> Воспроизводим правило отбора на более раннем якоре,
+    где целевое окно свободно от отбора.</p></div>
+
+  <h3>Честный бэктест: правило отбора воспроизведено на ранних якорях</h3>
+  <div class="tscroll"><table id="t-backtest"></table></div>
+  <p class="cap">Когорта = пользователи, активные в каждом из трёх 30-дневных блоков перед якорем.
+  Оранжевым — сетапы, где целевое окно попадает в зону гарантированной активности и потому непригодно
+  для честной оценки; голубым — честные.</p>
+
+  <div class="callout acc"><span class="lbl">Вывод</span>
+    <p>Смещение мягкое: на честных якорях активность в целевом окне <b>97.2–98.0%</b> вместо 100%.
+    Уровень RMSLE при этом стабилен по всем якорям (2.21–2.30 для наивного, 1.91–2.01 для калиброванного),
+    значит валидацию на якоре 2026-01-14 использовать <b>можно</b> — но ожидать в тесте на 2–3 п.п. больше
+    нулей, чем на валидации, и не удивляться небольшому проседанию скора.</p>
+    <p>Открытый вопрос: если организаторы применяли то же правило с учётом тестового блока
+    (2026-02-14 … 2026-03-15), то все 250k активны и в тесте, и валидация точна. Различить это по
+    доступным данным нельзя, но цена ошибки — 2–3 п.п. нулей.</p></div>
+
+  <h3>Когорты по первому появлению</h3>
+  <div class="tscroll"><table id="t-cohorts"></table></div>
+  <p class="cap">Поздние когорты кратно беднее: средний таргет 24–42 против 99 у январской когорты.
+  Дата первого появления — сильная фича.</p>
+</section>
+
+<!-- ============================================ 05 target -->
+<section id="s5">
+  <div class="sec-head"><span class="sec-n">05</span><h2>Целевая переменная: 46% нулей и тяжёлый хвост</h2></div>
+  <p class="sec-lede">Прокси-таргет — сумма GMV за <code>2026-01-15 … 2026-02-13</code> (последние 30 дней трейна,
+  структурно эквивалентны тестовому окну). Нулей 45.9%, среднее 84.0, максимум 53 747.</p>
+
+  <div class="tiles" id="tiles2"></div>
+
+  <div class="card">
+    <p class="card-h">Распределение таргета в log1p-шкале</p>
+    <p class="card-s">Слева — столбец нулей (45.9% клиентов); он обрезан по вертикали, иначе остальная часть
+    распределения нечитаема — фактические значения подписаны рядом. Справа — почти симметричное лог-нормальное
+    распределение положительной части. Для сравнения наложено распределение GMV за предыдущие 30 дней.
+    Первая корзина включает и микрозначения ниже 0.3; ровно нулей — 114 835 у таргета и 109 230 у prev30.</p>
+    <div class="plot" id="p-thist"></div>
+    <div class="legend" id="l-thist"></div>
+    <details class="tv"><summary>Таблица · корзины таргета</summary><div class="tscroll"><table id="t-tdist"></table></div></details>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <p class="card-h">Концентрация GMV (кривая Лоренца)</p>
+      <p class="card-s">Джини 0.700 по GMV за весь период. Верхний 1% клиентов даёт 14.9% GMV, верхние 10% — 53.0%.</p>
+      <div class="plot" id="p-lorenz"></div>
+      <div class="legend" id="l-lorenz"></div>
+      <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-conc"></table></div></details>
+    </div>
+    <div class="card">
+      <p class="card-h">Куда уходит масса таргета</p>
+      <p class="card-s">Доля клиентов и доля суммарного GMV по корзинам таргета. 3.4% клиентов с таргетом
+      выше 500 дают 42.6% всей суммы.</p>
+      <div class="plot" id="p-tshare"></div>
+      <div class="legend" id="l-tshare"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-h">Матрица переходов: GMV за предыдущие 30 дней → GMV за следующие 30 дней</p>
+    <p class="card-s">Строки — корзина по <code>prev30</code>, столбцы — корзина таргета. Значение —
+    доля строки. Диагональ размыта: даже у крупных клиентов следующий месяц слабо предсказуем поточечно.</p>
+    <div class="plot" id="p-trans"></div>
+    <div class="legend" id="l-trans"></div>
+    <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-trans"></table></div></details>
+  </div>
+  <p class="note">Ключевое число: <b>27.8% клиентов с нулевым GMV за предыдущие 30 дней всё равно покупают
+  в следующие 30 дней</b> — и приносят 12.6% всей массы таргета. Наивная авторегрессия предсказывает им ноль
+  и получает полный штраф. Симметрично: 9.3% клиентов из верхнего дециля <code>prev30</code> уходят в ноль.</p>
+</section>
+
+<!-- ============================================ 06 predictors -->
+<section id="s6">
+  <div class="sec-head"><span class="sec-n">06</span><h2>Предикторы: частота бьёт деньги</h2></div>
+  <p class="sec-lede">В лог-пространстве метрики сильнее всего с таргетом связано <b>число дней с покупкой
+  за всю историю</b>, а не сумма GMV за последние 30 дней. Это классическая BTYD-картина.</p>
+
+  <div class="card">
+    <p class="card-h">Связь признаков с таргетом</p>
+    <p class="card-s">Корреляция Пирсона между <code>log1p(признак)</code> и <code>log1p(таргет)</code> —
+    то есть ровно в той шкале, в которой считается метрика.</p>
+    <div class="plot" id="p-corr"></div>
+    <details class="tv"><summary>Таблица · со Спирменом</summary><div class="tscroll"><table id="t-corr"></table></div></details>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <p class="card-h">Вероятность покупки по децилям prev30</p>
+      <p class="card-s">Доля клиентов с положительным таргетом. Даже в верхнем дециле 9.3% уходят в ноль.</p>
+      <div class="plot" id="p-dec1"></div>
+      <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-dec"></table></div></details>
+    </div>
+    <div class="card">
+      <p class="card-h">Регрессия к среднему</p>
+      <p class="card-s">Отношение <code>сумма таргета / сумма prev30</code> по децилям. Нижние децили растут
+      в 6 раз, верхний — падает более чем вдвое.</p>
+      <div class="plot" id="p-dec2"></div>
+    </div>
+  </div>
+
+  <div class="callout acc"><span class="lbl">Почему это важно для RMSLE</span>
+    <p>Отношение таргета к <code>prev30</code> монотонно падает с 5.8 до 0.46 по децилям. Наивный прогноз
+    «таргет = prev30» одновременно <b>сильно занижает</b> для мелких клиентов и <b>сильно завышает</b> для
+    крупных. Именно поэтому сжатие в лог-пространстве
+    <code>expm1(0.55·log1p(prev30) + 0.9)</code> даёт скачок качества с 2.195 до 1.901 без единой новой фичи.</p></div>
+
+  <div class="card">
+    <p class="card-h">Затухание связи по 30-дневным блокам</p>
+    <p class="card-s">Корреляция <code>log1p(GMV блока)</code> с <code>log1p(GMV последнего блока)</code>
+    по мере удаления в прошлое. Плато на уровне ~0.53 — история годичной давности всё ещё информативна.</p>
+    <div class="plot" id="p-lag"></div>
+    <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-lag"></table></div></details>
+  </div>
+
+  <h3>Таргет по давности последней активности</h3>
+  <div class="tscroll"><table id="t-rec"></table></div>
+  <p class="cap">Recency на якоре 2026-01-14. Пользователи, активные в день якоря (36.9%), дают 57.8%
+  всего таргета. Из-за правила отбора recency нигде не превышает 30 дней.</p>
+</section>
+
+<!-- ============================================ 07 baselines -->
+<section id="s7">
+  <div class="sec-head"><span class="sec-n">07</span><h2>Бейзлайны и потолок качества</h2></div>
+  <p class="sec-lede">Валидация на якоре 2026-01-14, целевое окно <code>2026-01-15 … 2026-02-13</code>,
+  все 250 000 клиентов. Наивная авторегрессия из baseline даёт 2.195 — и легко улучшается на 0.29 без ML.</p>
+
+  <div class="card">
+    <p class="card-h">RMSLE бейзлайнов (меньше — лучше)</p>
+    <p class="card-s">Оранжевым — бейзлайн из авторского ноутбука (<code>sample_submit.csv</code>).
+    Аквамарином — оракулы: подгонка среднего log-таргета по ячейкам признаков на тех же данных,
+    оценка сверху для табличной модели.</p>
+    <div class="plot" id="p-base"></div>
+    <div class="legend" id="l-base"></div>
+    <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-base"></table></div></details>
+  </div>
+
+  <div class="card">
+    <p class="card-h">Оценка потолка: оракул по ячейкам признаков</p>
+    <p class="card-s">In-sample среднее <code>log1p(таргет)</code> внутри ячейки. С третьим признаком
+    качество прыгает до 1.733, дальше начинается переобучение на мелких ячейках.</p>
+    <div class="tscroll"><table id="t-head"></table></div>
+  </div>
+  <p class="note">Реалистичный ориентир для честной модели — <b>RMSLE ≈ 1.72–1.80</b>. Это ~0.40–0.47
+  ниже наивного бейзлайна. Разрыв между «сжатой авторегрессией» (1.90) и оракулом на трёх признаках (1.73)
+  — та часть, которую забирает нормальный градиентный бустинг.</p>
+</section>
+
+<!-- ============================================ 08 seasonality -->
+<section id="s8">
+  <div class="sec-head"><span class="sec-n">08</span><h2>Сезонная ловушка: калибровка на валидации собьёт прогноз</h2></div>
+  <p class="sec-lede">Валидационное окно — январско-февральский провал после новогоднего пика.
+  Тестовое окно — период 23 февраля и 8 марта. По календарному аналогу 2025 года это противоположные фазы.</p>
+
+  <div class="card">
+    <p class="card-h">Отношение суммы таргета к сумме GMV за предыдущие 30 дней</p>
+    <p class="card-s">По якорям. Календарный аналог тестового окна (2025-02-14 … 2025-03-15) отмечен оранжевым.</p>
+    <div class="plot" id="p-season"></div>
+    <div class="legend" id="l-season"></div>
+    <details class="tv"><summary>Таблица</summary><div class="tscroll"><table id="t-season"></table></div></details>
+  </div>
+
+  <div class="callout"><span class="lbl">Число, которое стоит запомнить</span>
+    <p>В 2025 году окно <code>14 фев → 15 мар</code> дало <b>+16.3% GMV</b> относительно предыдущих 30 дней
+    (+13.4% в пересчёте на активного пользователя). Валидационное окно <code>15 янв → 13 фев 2026</code> дало
+    <b>−17.1%</b>. Оптимальный коэффициент сжатия α в <code>α · prev30</code> составляет <b>0.30</b> на
+    валидации и <b>0.37</b> на календарном аналоге теста.</p>
+    <p>Модель, откалиброванная только на последнем окне, будет систематически занижать прогноз в тесте.
+    Поправка на уровне <b>×1.10 … ×1.25</b> к итоговым предсказаниям (или свободный член
+    <code>+0.10 … +0.22</code> в лог-пространстве) выглядит обоснованной. Проверять — на паблик-лидерборде,
+    он даёт 50 000 клиентов обратной связи.</p></div>
+
+  <div class="tscroll"><table id="t-yoy"></table></div>
+  <p class="cap">Календарные окна 2025 года и их аналоги 2026-го. <code>gmv_per_active</code> частично снимает
+  эффект роста базы пользователей.</p>
+</section>
+
+<!-- ============================================ 09 next -->
+<section id="s9">
+  <div class="sec-head"><span class="sec-n">09</span><h2>Что из этого следует для решения</h2></div>
+  <p class="sec-lede">Порядок — по отношению «эффект / затраты». Первые три пункта дают основную часть прироста.</p>
+  <ul class="act" id="acts"></ul>
+</section>
+
+<footer>
+  <span>Ozon E-CUP · Search LTV</span>
+  <span>EDA на полных данных, без сэмплирования</span>
+  <span>train.parquet · 30 631 006 × 18</span>
+  <span id="fdate"></span>
+</footer>
+
+</main>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const D = JSON.parse(document.getElementById('eda-data').textContent);
+const NS = "http://www.w3.org/2000/svg";
+const cs = getComputedStyle(document.documentElement);
+function tok(n){ return cs.getPropertyValue(n).trim(); }
+function E(n,a,p){const e=document.createElementNS(NS,n);if(a)for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function H(n,a,p){const e=document.createElement(n);if(a)for(const k in a){if(k==='html')e.innerHTML=a[k];else if(k==='text')e.textContent=a[k];else e.setAttribute(k,a[k]);}if(p)p.appendChild(e);return e;}
+
+/* ---------------------------------------------------------- formatting */
+const NB=' ';
+function nf(v,d){ if(v==null||!isFinite(v))return '—';
+  const s=Math.abs(v)>=1000?v.toLocaleString('ru-RU',{maximumFractionDigits:d||0,minimumFractionDigits:d||0})
+                            :v.toLocaleString('ru-RU',{maximumFractionDigits:d==null?2:d,minimumFractionDigits:d==null?0:d});
+  return s.replace(/ /g,NB); }
+function pc(v,d){ return v==null?'—':nf(v*100,d==null?1:d)+'%'; }
+function si(v){ if(v==null)return '—';
+  if(Math.abs(v)>=1e9)return nf(v/1e9,2)+' млрд'; if(Math.abs(v)>=1e6)return nf(v/1e6,2)+' млн';
+  if(Math.abs(v)>=1e3)return nf(v/1e3,1)+' тыс.'; return nf(v,1); }
+function dshort(s){ const m=s.slice(5,7), d=s.slice(8,10); return d+'.'+m; }
+const MON=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+function dmon(s){ return MON[+s.slice(5,7)-1]+" '"+s.slice(2,4); }
+
+/* ---------------------------------------------------------- tooltip */
+function mkTip(host){ const t=H('div',{class:'tip'},host); host.style.position='relative'; return t; }
+function showTip(t,x,y,html){ t.innerHTML=html; t.style.left=x+'px'; t.style.top=y+'px'; t.style.opacity=1; }
+function hideTip(t){ t.style.opacity=0; }
+
+/* ---------------------------------------------------------- line chart */
+function lineChart(host, cfg){
+  host.innerHTML='';
+  const W=1000, H0=cfg.height||300, m=cfg.margin||{t:12,r:14,b:26,l:52};
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+H0,role:'img','aria-label':cfg.aria||''},host);
+  const n=cfg.x.length, extra=cfg.forward||0, N=n+extra;
+  const iw=W-m.l-m.r, ih=H0-m.t-m.b;
+  let lo=cfg.yMin!=null?cfg.yMin:Infinity, hi=-Infinity;
+  cfg.series.forEach(s=>s.values.forEach(v=>{ if(v==null)return; if(v<lo)lo=v; if(v>hi)hi=v; }));
+  if(cfg.yMin!=null)lo=cfg.yMin; if(cfg.yMax!=null)hi=cfg.yMax;
+  const pad=(hi-lo)*0.08||1; hi+=pad; if(cfg.yMin==null)lo-=pad;
+  const X=i=>m.l+(N<2?0:i*iw/(N-1)), Y=v=>m.t+ih-(v-lo)/(hi-lo)*ih;
+  // grid
+  const ticks=cfg.yTicks||5;
+  for(let i=0;i<=ticks;i++){ const v=lo+(hi-lo)*i/ticks, y=Y(v);
+    E('line',{x1:m.l,x2:W-m.r,y1:y,y2:y,stroke:tok('--rule'),'stroke-width':1},svg);
+    const tx=E('text',{x:m.l-8,y:y+3.5,'text-anchor':'end',fill:tok('--ink-3'),'font-size':10,
+      'font-family':'ui-monospace,Menlo,monospace'},svg); tx.textContent=(cfg.yFmt||si)(v); }
+  // forward band
+  if(extra>0){
+    const pid='hatch'+Math.random().toString(36).slice(2,7);
+    const d=E('defs',{},svg), pt=E('pattern',{id:pid,width:6,height:6,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},d);
+    E('rect',{width:6,height:6,fill:tok('--surface-2')},pt);
+    E('line',{x1:0,y1:0,x2:0,y2:6,stroke:tok('--rule-strong'),'stroke-width':1.6},pt);
+    E('rect',{x:X(n-1),y:m.t,width:X(N-1)-X(n-1),height:ih,fill:'url(#'+pid+')',opacity:.85},svg);
+    const lb=E('text',{x:X(n-1)+8,y:m.t+13,fill:tok('--ink-3'),'font-size':10,
+      'font-family':'ui-monospace,Menlo,monospace'},svg); lb.textContent=cfg.forwardLabel||'';
+  }
+  // series
+  cfg.series.forEach(s=>{
+    if(s.area){ let d='M'+X(0)+' '+Y(lo); s.values.forEach((v,i)=>{ if(v!=null)d+='L'+X(i)+' '+Y(v); });
+      d+='L'+X(s.values.length-1)+' '+Y(lo)+'Z'; E('path',{d:d,fill:s.color,opacity:.10},svg); }
+    let d='',pen=false;
+    s.values.forEach((v,i)=>{ if(v==null){pen=false;return;} d+=(pen?'L':'M')+X(i)+' '+Y(v); pen=true; });
+    E('path',{d:d,fill:'none',stroke:s.color,'stroke-width':s.width||2,'stroke-linejoin':'round',
+      'stroke-linecap':'round',opacity:s.opacity==null?1:s.opacity},svg);
+  });
+  // x labels
+  const step=Math.max(1,Math.ceil(n/(cfg.xEvery||8)));
+  for(let i=0;i<n;i+=step){ const t=E('text',{x:X(i),y:H0-6,'text-anchor':'middle',fill:tok('--ink-3'),
+    'font-size':10,'font-family':'ui-monospace,Menlo,monospace'},svg); t.textContent=(cfg.xFmt||dshort)(cfg.x[i]); }
+  // crosshair
+  const tip=mkTip(host);
+  const cl=E('line',{x1:0,x2:0,y1:m.t,y2:m.t+ih,stroke:tok('--rule-strong'),'stroke-width':1,opacity:0},svg);
+  const dots=cfg.series.map(s=>E('circle',{r:4.5,fill:s.color,stroke:tok('--surface'),'stroke-width':2,opacity:0},svg));
+  const hit=E('rect',{x:m.l,y:m.t,width:iw,height:ih,fill:'transparent'},svg);
+  function move(ev){
+    const r=svg.getBoundingClientRect(), px=(ev.clientX-r.left)/r.width*W;
+    let i=Math.round((px-m.l)/(iw/(N-1))); i=Math.max(0,Math.min(n-1,i));
+    cl.setAttribute('x1',X(i)); cl.setAttribute('x2',X(i)); cl.setAttribute('opacity',1);
+    let h='<span class="th">'+(cfg.tipHead?cfg.tipHead(cfg.x[i]):cfg.x[i])+'</span>';
+    cfg.series.forEach((s,k)=>{ const v=s.values[i];
+      if(v==null){dots[k].setAttribute('opacity',0);return;}
+      dots[k].setAttribute('cx',X(i)); dots[k].setAttribute('cy',Y(v)); dots[k].setAttribute('opacity',1);
+      h+='<div class="tr"><span><i style="background:'+s.color+'"></i>'+s.name+'</span><b>'+(s.fmt||cfg.yFmt||si)(v)+'</b></div>'; });
+    const hr=host.getBoundingClientRect();
+    showTip(tip, (ev.clientX-hr.left), (ev.clientY-hr.top)-10, h);
+  }
+  hit.addEventListener('mousemove',move);
+  hit.addEventListener('mouseleave',()=>{ hideTip(tip); cl.setAttribute('opacity',0); dots.forEach(d=>d.setAttribute('opacity',0)); });
+}
+
+/* ---------------------------------------------------------- vertical bars */
+function barsV(host, cfg){
+  host.innerHTML='';
+  const W=cfg.vw||1000,H0=cfg.height||260,m=cfg.margin||{t:14,r:12,b:44,l:52};
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+H0,role:'img','aria-label':cfg.aria||''},host);
+  const n=cfg.cats.length, iw=W-m.l-m.r, ih=H0-m.t-m.b;
+  let hi=cfg.yMax!=null?cfg.yMax:Math.max.apply(null,cfg.values.filter(v=>v!=null));
+  let lo=cfg.yMin!=null?cfg.yMin:0; if(hi===lo)hi=lo+1;
+  const bw=iw/n, gap=Math.min(6,bw*0.28), w=Math.max(1.5,bw-gap);
+  const Y=v=>m.t+ih-(v-lo)/(hi-lo)*ih;
+  const ticks=cfg.yTicks||4;
+  for(let i=0;i<=ticks;i++){ const v=lo+(hi-lo)*i/ticks,y=Y(v);
+    E('line',{x1:m.l,x2:W-m.r,y1:y,y2:y,stroke:tok('--rule'),'stroke-width':1},svg);
+    const t=E('text',{x:m.l-8,y:y+3.5,'text-anchor':'end',fill:tok('--ink-3'),'font-size':10,
+      'font-family':'ui-monospace,Menlo,monospace'},svg); t.textContent=(cfg.yFmt||si)(v); }
+  const tip=mkTip(host);
+  cfg.values.forEach((v,i)=>{
+    if(v==null)return;
+    const x=m.l+i*bw+gap/2, y=Math.min(Y(v),Y(lo)), h=Math.abs(Y(v)-Y(lo));
+    const col=cfg.colorAt?cfg.colorAt(i):tok('--s1');
+    const r=E('rect',{x:x,y:y,width:w,height:Math.max(h,1),rx:Math.min(4,w/2),fill:col},svg);
+    const hz=E('rect',{x:x-gap/2,y:m.t,width:bw,height:ih,fill:'transparent'},svg);
+    hz.addEventListener('mousemove',ev=>{ const hr=host.getBoundingClientRect();
+      showTip(tip,ev.clientX-hr.left,ev.clientY-hr.top-10,
+        '<span class="th">'+(cfg.tipHead?cfg.tipHead(i):cfg.cats[i])+'</span>'+
+        '<div class="tr"><span><i style="background:'+col+'"></i>'+(cfg.label||'')+'</span><b>'+
+        (cfg.tipFmt||cfg.yFmt||si)(v)+'</b></div>'); });
+    hz.addEventListener('mouseleave',()=>hideTip(tip));
+    if(cfg.valueLabels){ const t=E('text',{x:x+w/2,y:y-6,'text-anchor':'middle',fill:tok('--ink-2'),
+      'font-size':10,'font-family':'ui-monospace,Menlo,monospace'},svg); t.textContent=(cfg.labFmt||cfg.yFmt||si)(v); }
+  });
+  E('line',{x1:m.l,x2:W-m.r,y1:Y(lo),y2:Y(lo),stroke:tok('--rule-strong'),'stroke-width':1},svg);
+  const every=cfg.xEvery||1;
+  cfg.cats.forEach((c,i)=>{ if(i%every)return;
+    const t=E('text',{x:m.l+i*bw+bw/2,y:H0-m.b+16,'text-anchor':cfg.rotate?'end':'middle',fill:tok('--ink-3'),
+      'font-size':10,'font-family':'ui-monospace,Menlo,monospace'},svg);
+    if(cfg.rotate)t.setAttribute('transform','rotate(-40 '+(m.l+i*bw+bw/2)+' '+(H0-m.b+16)+')');
+    t.textContent=c; });
+}
+
+/* ---------------------------------------------------------- horizontal bars */
+function barsH(host, cfg){
+  host.innerHTML='';
+  const n=cfg.cats.length, rowH=cfg.rowH||24, W=cfg.vw||1000, m={t:6,r:cfg.right||66,b:6,l:cfg.left||250};
+  const H0=m.t+m.b+n*rowH;
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+H0,role:'img','aria-label':cfg.aria||''},host);
+  const iw=W-m.l-m.r;
+  const lo=cfg.xMin!=null?cfg.xMin:0;
+  const hi=cfg.xMax!=null?cfg.xMax:Math.max.apply(null,cfg.values);
+  const X=v=>m.l+(v-lo)/(hi-lo)*iw;
+  const tip=mkTip(host);
+  E('line',{x1:X(lo),x2:X(lo),y1:m.t,y2:H0-m.b,stroke:tok('--rule-strong'),'stroke-width':1},svg);
+  cfg.values.forEach((v,i)=>{
+    const y=m.t+i*rowH+3, h=rowH-8;
+    const col=cfg.colorAt?cfg.colorAt(i):tok('--s1');
+    const x0=X(Math.min(lo,v)), x1=X(Math.max(lo,v));
+    E('rect',{x:x0,y:y,width:Math.max(x1-x0,1.5),height:h,rx:Math.min(4,h/2),fill:col},svg);
+    const lb=E('text',{x:m.l-10,y:y+h/2+3.5,'text-anchor':'end',fill:tok('--ink-2'),'font-size':11,
+      'font-family':'ui-monospace,Menlo,monospace'},svg); lb.textContent=cfg.cats[i];
+    const vl=E('text',{x:x1+8,y:y+h/2+3.5,fill:tok('--ink'),'font-size':11,'font-weight':600,
+      'font-family':'ui-monospace,Menlo,monospace'},svg); vl.textContent=(cfg.vFmt||(x=>nf(x,3)))(v);
+    const hz=E('rect',{x:0,y:m.t+i*rowH,width:W,height:rowH,fill:'transparent'},svg);
+    hz.addEventListener('mousemove',ev=>{ const hr=host.getBoundingClientRect();
+      showTip(tip,ev.clientX-hr.left,ev.clientY-hr.top-10,
+        '<span class="th">'+cfg.cats[i]+'</span><div class="tr"><span><i style="background:'+col+'"></i>'+
+        (cfg.label||'')+'</span><b>'+(cfg.tipFmt||cfg.vFmt||(x=>nf(x,3)))(v)+'</b></div>'); });
+    hz.addEventListener('mouseleave',()=>hideTip(tip));
+  });
+}
+
+/* ---------------------------------------------------------- heatmap */
+function heatmap(host, cfg){
+  host.innerHTML='';
+  const R=cfg.rows.length, C=cfg.cols.length;
+  const W=1000, cell=(W-160-10)/C, H0=40+R*Math.min(cell,30)+26;
+  const ch=Math.min(cell,30);
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+H0,role:'img','aria-label':cfg.aria||''},host);
+  const ramp=['--hm0','--hm1','--hm2','--hm3','--hm4','--hm5','--hm6','--hm7'].map(tok);
+  const mx=cfg.max||Math.max.apply(null,cfg.matrix.map(r=>Math.max.apply(null,r)));
+  const tip=mkTip(host);
+  cfg.cols.forEach((c,j)=>{ const x=160+j*cell+cell/2;
+    const t=E('text',{x:x,y:30,'text-anchor':'end',fill:tok('--ink-3'),'font-size':9.5,
+      'font-family':'ui-monospace,Menlo,monospace',transform:'rotate(-45 '+x+' 30)'},svg); t.textContent=c; });
+  cfg.matrix.forEach((row,i)=>{
+    const y=40+i*ch;
+    const rl=E('text',{x:152,y:y+ch/2+3.5,'text-anchor':'end',fill:tok('--ink-2'),'font-size':10,
+      'font-family':'ui-monospace,Menlo,monospace'},svg); rl.textContent=cfg.rows[i];
+    row.forEach((v,j)=>{
+      const k=Math.min(7,Math.max(0,Math.round(Math.sqrt(v/mx)*7)));
+      const x=160+j*cell;
+      E('rect',{x:x+1,y:y+1,width:cell-2,height:ch-2,rx:2.5,fill:ramp[k]},svg);
+      if(v>=0.10){ const t=E('text',{x:x+cell/2,y:y+ch/2+3.5,'text-anchor':'middle',
+        fill:k>=4?tok('--surface'):tok('--ink'),'font-size':9.5,'font-weight':600,
+        'font-family':'ui-monospace,Menlo,monospace'},svg); t.textContent=Math.round(v*100); }
+      const hz=E('rect',{x:x,y:y,width:cell,height:ch,fill:'transparent'},svg);
+      hz.addEventListener('mousemove',ev=>{ const hr=host.getBoundingClientRect();
+        showTip(tip,ev.clientX-hr.left,ev.clientY-hr.top-10,
+          '<span class="th">prev30 '+cfg.rows[i]+' → таргет '+cfg.cols[j]+'</span>'+
+          '<div class="tr"><span>доля строки</span><b>'+pc(v,1)+'</b></div>'+
+          '<div class="tr"><span>клиентов в строке</span><b>'+nf(cfg.rowCounts[i])+'</b></div>'); });
+      hz.addEventListener('mouseleave',()=>hideTip(tip));
+    });
+  });
+}
+
+/* ---------------------------------------------------------- tables */
+function table(id, cols, rows, rowClass){
+  const t=document.getElementById(id); if(!t)return; t.innerHTML='';
+  const th=H('thead',{},t), tr=H('tr',{},th);
+  cols.forEach(c=>{ const e=H('th',{},tr); e.textContent=c.h; if(c.title)e.title=c.title; });
+  const tb=H('tbody',{},t);
+  rows.forEach((r,i)=>{ const x=H('tr',{},tb); const cl=rowClass?rowClass(r,i):null; if(cl)x.className=cl;
+    cols.forEach(c=>{ const e=H('td',{},x); const v=c.f?c.f(r,i):r[c.k];
+      if(v&&v.nodeType)e.appendChild(v); else e.innerHTML=v==null?'—':v; }); });
+}
+
+/* ============================================================ RENDER */
+const C=D.charts, S=D.summary;
+
+/* ---- hero sparkline */
+(function(){
+  const g=C.daily.gmv, x=C.daily.date, ma=[];
+  for(let i=0;i<g.length;i++){ let s=0,c=0; for(let j=Math.max(0,i-6);j<=i;j++){s+=g[j];c++;} ma.push(s/c); }
+  lineChart(document.getElementById('p-hero'),{
+    x:x, height:132, margin:{t:8,r:14,b:22,l:52}, forward:30, forwardLabel:'прогноз',
+    xEvery:7, xFmt:dmon, yTicks:3, yMin:0, yFmt:v=>si(v),
+    tipHead:s=>s,
+    series:[{name:'GMV за день',color:tok('--s1'),values:g,width:1.1,opacity:.32,area:true},
+            {name:'Скользящее среднее, 7 дней',color:tok('--s1'),values:ma,width:2}],
+    aria:'Дневной GMV за 409 дней'});
+  legend('l-hero',[{n:'GMV за день',c:tok('--s1'),o:.35},{n:'Скользящее среднее, 7 дней',c:tok('--s1')},
+    {n:'Прогнозируемое окно (данных нет)',c:tok('--rule-strong'),sq:true}]);
+})();
+
+function legend(id,items){ const l=document.getElementById(id); if(!l)return; l.innerHTML='';
+  items.forEach(it=>{ const s=H('span',{},l);
+    const i=H('i',{},s); i.style.background=it.c; if(it.o)i.style.opacity=it.o; if(it.sq)i.className='sq';
+    s.appendChild(document.createTextNode(it.n)); }); }
+
+/* ---- tiles */
+(function(){
+  const t=[
+    ['Строк в train','30,63','млн','плотная панель — 102.25 млн ячеек'],
+    ['Заполненность','29,96','%','остальное — дни без записи'],
+    ['Клиентов','250','тыс.','все активны в последние 30 дней'],
+    ['Суммарный GMV','272,1','млн','92.7% приходит из Поиска'],
+    ['Нулевой таргет','45,9','%','клиентов без покупок за 30 дней'],
+    ['Джини по GMV','0,700','','топ-1% клиентов даёт 14.9%'],
+  ];
+  const h=document.getElementById('tiles');
+  t.forEach(r=>{ const d=H('div',{class:'tile'},h);
+    H('p',{class:'tile-k',text:r[0]},d);
+    H('p',{class:'tile-v',html:r[1]+(r[2]?' <span class="u">'+r[2]+'</span>':'')},d);
+    H('p',{class:'tile-s',text:r[3]},d); });
+})();
+
+(function(){
+  const T=S.target;
+  const t=[
+    ['Среднее',nf(T.mean,1),'','при медиане положительных 61.4'],
+    ['Доля нулей',pc(T.share_zero,1),'','114 835 клиентов'],
+    ['p99',nf(T.p99,0),'','p99.9 = 2 934'],
+    ['Максимум',nf(T.p100,0),'','один клиент'],
+    ['sd(log1p)',nf(T.std_log1p,2),'','масштаб ошибки метрики'],
+    ['RMSLE «всё в ноль»',nf(3.2036,3),'','абсолютный минимум качества'],
+  ];
+  const h=document.getElementById('tiles2');
+  t.forEach(r=>{ const d=H('div',{class:'tile'},h);
+    H('p',{class:'tile-k',text:r[0]},d); H('p',{class:'tile-v',html:r[1]},d); H('p',{class:'tile-s',text:r[3]},d); });
+})();
+
+/* ---- findings */
+(function(){
+  const F=[
+    ['F-01','s4','Восстановлен критерий отбора пользователей','crit',
+     'Все 250k активны в каждом из трёх последних 30-дневных блоков (100.0000%), в четвёртом — 93.3%. Валидация на последнем окне оптимистична, а «рост» в данных частично фиктивен.'],
+    ['F-02','s8','Тестовое окно — сезонный подъём, валидационное — провал','crit',
+     'Календарный аналог теста в 2025 дал +16.3% к предыдущим 30 дням; валидационное окно — минус 17.1%. Калибровка только на валидации систематически занизит прогноз.'],
+    ['F-03','s7','Наивный бейзлайн улучшается на 0.29 RMSLE без единой фичи','info',
+     'prev30 = 2.195 → сжатие в лог-пространстве expm1(0.55·log1p(prev30)+0.9) = 1.901. Оптимальный α в α·prev30 равен 0.30, не 1.0.'],
+    ['F-04','s5','46% таргета — нули, но 27.8% из «спящих» покупают','info',
+     'Клиенты с нулевым prev30 приносят 12.6% всей массы таргета. Модель обязана предсказывать им ненулевое значение.'],
+    ['F-05','s6','Частота покупок предсказывает лучше, чем сумма','info',
+     'Число дней с покупкой за всю историю: r = 0.630 в лог-пространстве. GMV за последние 30 дней: 0.557. Классическая BTYD-картина.'],
+    ['F-06','s1','Данные идеально чистые, 9 из 18 колонок избыточны','ok',
+     'Ноль пропусков, ноль дубликатов, все арифметические тождества выполняются точно. Флаги has_* и суммы to_cart/to_ord/gmv восстанавливаются из остальных колонок.'],
+    ['F-07','s1','18% строк не содержат никакой активности','info',
+     '5.58 млн строк полностью нулевые. Наличие строки — самостоятельный сигнал «был на площадке»; отсюда различие дней-визитов и дней-активности.'],
+    ['F-08','s7','Реалистичный потолок — RMSLE ≈ 1.72–1.80','info',
+     'Оракул по трём признакам (prev30 × recency × дни покупок за 90д) даёт 1.733 in-sample. Разрыв с калиброванной авторегрессией — рабочая зона бустинга.'],
+    ['F-09','s2','Плотная панель помещается в память','ok',
+     '250k × 409 в float32 — 409 МБ. Пять матриц = 1.1 ГБ. Оконные агрегации через cumsum — доли секунды вместо минут на group_by.'],
+    ['F-10','s5','Хвост определяет метрику меньше, чем кажется','info',
+     'Джини 0.700, топ-10% дают 53% GMV. Но RMSLE в лог-шкале взвешивает всех одинаково — цена ошибки на «спящем» клиенте равна цене ошибки на крупном.'],
+  ];
+  const h=document.getElementById('finds');
+  F.forEach(f=>{ const a=H('a',{class:'find',href:'#'+f[1]},h);
+    H('span',{class:'fid',text:f[0]},a);
+    const d=H('div',{},a);
+    const t=H('p',{class:'ft'},d);
+    t.appendChild(document.createTextNode(f[2]));
+    H('span',{class:'chip '+f[3],text:f[3]==='crit'?'критично':(f[3]==='ok'?'ок':'важно')},t);
+    H('p',{class:'fd',text:f[4]},d); });
+})();
+
+/* ---- rail */
+(function(){
+  const secs=[['00','Что показал анализ','s0'],['01','Целостность данных','s1'],['02','Разреженность панели','s2'],
+    ['03','Временная динамика','s3'],['04','Критерий отбора','s4'],['05','Целевая переменная','s5'],
+    ['06','Предикторы','s6'],['07','Бейзлайны и потолок','s7'],['08','Сезонная ловушка','s8'],
+    ['09','Что делать дальше','s9']];
+  const r=document.getElementById('rail');
+  secs.forEach(s=>{ const li=H('li',{},r); const a=H('a',{href:'#'+s[2]},li);
+    H('span',{class:'n',text:s[0]},a); H('span',{text:s[1]},a); });
+  const links=Array.from(r.querySelectorAll('a'));
+  const obs=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){
+    links.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+e.target.id)); } }); },
+    {rootMargin:'-10% 0px -70% 0px'});
+  secs.forEach(s=>{ const el=document.getElementById(s[2]); if(el)obs.observe(el); });
+})();
+
+/* ---- 01 integrity */
+table('t-integrity',
+  [{h:'Проверка',k:'n'},{h:'Нарушений',f:r=>'<span class="pos">'+r.v+'</span>'},{h:'Из строк',f:r=>nf(30631006)}],
+  [{n:'Пропуски во всех 18 колонках',v:'0'},{n:'Дубликаты (user_id, event_date)',v:'0'},
+   {n:'gmv = gmv_search + gmv_cat',v:'0'},{n:'to_cart = search_to_cart + cat_to_cart',v:'0'},
+   {n:'to_ord = search_to_ord + cat_to_ord',v:'0'},{n:'has_search_to_cart = 1[search_to_cart>0]',v:'0'},
+   {n:'has_search_to_ord = 1[search_to_ord>0]',v:'0'},{n:'has_cat_to_cart = 1[cat_to_cart>0]',v:'0'},
+   {n:'has_cat_to_ord = 1[cat_to_ord>0]',v:'0'},{n:'to_ord ≤ to_cart',v:'0'},
+   {n:'gmv > 0 ⇔ to_ord > 0',v:'0'},{n:'search = 1 ⇒ searches > 0',v:'0'},
+   {n:'search = 0 ⇒ searches = 0',v:'0'}]);
+
+table('t-cols',
+  [{h:'Колонка',k:'column'},{h:'≠0',f:r=>pc(r.nonzero_share,2)},{h:'Среднее',f:r=>nf(r.mean,3)},
+   {h:'σ',f:r=>nf(r.std,3)},{h:'p50',f:r=>nf(r.p50,2)},{h:'p90',f:r=>nf(r.p90,2)},
+   {h:'p99',f:r=>nf(r.p99,2)},{h:'p99.9',f:r=>nf(r['p99.9'],2)},{h:'max',f:r=>nf(r.max,2)},
+   {h:'Сумма',f:r=>si(r.sum)}], D.tables.cols);
+
+table('t-channels',
+  [{h:'search / cat',k:'lab'},{h:'Строк',f:r=>nf(r.rows)},{h:'Доля строк',f:r=>pc(r.rows/30631006,1)},
+   {h:'P(gmv>0)',f:r=>pc(r.p,2)},{h:'GMV',f:r=>si(r.gmv)},{h:'Доля GMV',f:r=>pc(r.gmv/272101574,2)},
+   {h:'Поисков',f:r=>si(r.s)},{h:'В корзину',f:r=>si(r.c)},{h:'Заказов',f:r=>si(r.o)}],
+  [{lab:'0 / 0 — пустой визит',rows:4667981,p:0.007138,gmv:1474000,s:0,c:188985,o:38041},
+   {lab:'0 / 1 — только Каталог',rows:1256650,p:0.045702,gmv:3843400,s:0,c:475113,o:79303},
+   {lab:'1 / 0 — только Поиск',rows:21195391,p:0.178719,gmv:205920000,s:77094856,c:23394982,o:6220105},
+   {lab:'1 / 1 — оба канала',rows:3510984,p:0.244415,gmv:60860000,s:21363620,c:7881814,o:1714519}]);
+
+/* ---- 02 sparsity */
+(function(){
+  const h=C.visit_days_hist, cats=[], vals=[];
+  for(let i=0;i<h.counts.length;i++){ cats.push(h.edges[i]); vals.push(h.counts[i]); }
+  barsV(document.getElementById('p-visitdays'),{cats:cats.map(String),values:vals,height:220,
+    xEvery:4,label:'клиентов',yFmt:v=>si(v),tipFmt:v=>nf(v),
+    tipHead:i=>h.edges[i]+'–'+(h.edges[i+1]-1)+' дней с записью',
+    margin:{t:14,r:12,b:30,l:52},aria:'Гистограмма числа дней с записью'});
+  table('t-visitdays',[{h:'Дней с записью',f:r=>r.a+'–'+r.b},{h:'Клиентов',f:r=>nf(r.n)},
+    {h:'Доля',f:r=>pc(r.n/250000,2)}],
+    h.counts.map((n,i)=>({a:h.edges[i],b:h.edges[i+1]-1,n:n})).filter(r=>r.n>0));
+})();
+
+table('t-udist',
+  [{h:'Метрика',k:'metric'},{h:'Среднее',f:r=>nf(r.mean,1)},{h:'σ',f:r=>nf(r.std,1)},{h:'min',f:r=>nf(r.p0,0)},
+   {h:'p10',f:r=>nf(r.p10,0)},{h:'p25',f:r=>nf(r.p25,0)},{h:'p50',f:r=>nf(r.p50,0)},{h:'p75',f:r=>nf(r.p75,0)},
+   {h:'p90',f:r=>nf(r.p90,0)},{h:'p99',f:r=>nf(r.p99,0)},{h:'max',f:r=>nf(r.p100,0)},
+   {h:'Доля нулей',f:r=>pc(r.share_zero,2)}], D.tables.udist,
+  r=>/recency/.test(r.metric)?'hi2':null);
+
+/* ---- 03 time */
+(function(){
+  const g=C.daily.gmv,x=C.daily.date,ma=[];
+  for(let i=0;i<g.length;i++){ let s=0,c=0; for(let j=Math.max(0,i-6);j<=i;j++){s+=g[j];c++;} ma.push(s/c); }
+  lineChart(document.getElementById('p-daily'),{x:x,height:300,forward:30,forwardLabel:'прогноз',
+    xEvery:9,xFmt:dmon,yMin:0,yFmt:si,tipHead:s=>s,
+    series:[{name:'GMV за день',color:tok('--s1'),values:g,width:1.1,opacity:.34},
+            {name:'Среднее за 7 дней',color:tok('--s2'),values:ma,width:2}],
+    aria:'Дневной GMV'});
+  legend('l-daily',[{n:'GMV за день',c:tok('--s1'),o:.35},{n:'Скользящее среднее, 7 дней',c:tok('--s2')},
+    {n:'Прогнозируемое окно',c:tok('--rule-strong'),sq:true}]);
+  const v=C.daily.visitors,b=C.daily.buyers,mv=[],mb=[];
+  for(let i=0;i<v.length;i++){ let s1=0,s2=0,c=0; for(let j=Math.max(0,i-6);j<=i;j++){s1+=v[j];s2+=b[j];c++;}
+    mv.push(s1/c); mb.push(s2/c); }
+  lineChart(document.getElementById('p-users'),{x:x,height:250,forward:30,forwardLabel:'',
+    xEvery:9,xFmt:dmon,yMin:0,yFmt:si,tipHead:s=>s,
+    series:[{name:'Пользователей с записью',color:tok('--s1'),values:mv,width:2},
+            {name:'Пользователей с покупкой',color:tok('--s3'),values:mb,width:2}],
+    aria:'Активные пользователи и покупатели по дням'});
+  legend('l-users',[{n:'Пользователей с записью (7-дн. среднее)',c:tok('--s1')},
+    {n:'Пользователей с покупкой (7-дн. среднее)',c:tok('--s3')}]);
+  const rows=C.daily.date.map((d,i)=>({d:d,g:g[i],b:b[i],v:v[i],o:C.daily.orders[i]}));
+  rows.sort((p,q)=>q.g-p.g);
+  const top=rows.slice(0,10).map(r=>Object.assign({t:'макс'},r)).concat(
+            rows.slice(-10).reverse().map(r=>Object.assign({t:'мин'},r)));
+  table('t-days',[{h:'Дата',k:'d'},{h:'',k:'t'},{h:'GMV',f:r=>si(r.g)},{h:'Покупателей',f:r=>nf(r.b)},
+    {h:'Заказов',f:r=>nf(r.o)},{h:'С записью',f:r=>nf(r.v)},{h:'GMV на покупателя',f:r=>nf(r.g/r.b,1)}],
+    top, r=>r.t==='мин'?'hi2':null);
+})();
+
+table('t-monthly',
+  [{h:'Месяц',k:'month'},{h:'Дней',k:'days'},{h:'GMV',f:r=>si(r.gmv)},{h:'GMV/день',f:r=>si(r.gmv_per_day)},
+   {h:'Заказов',f:r=>si(r.orders)},{h:'Ср. чек товара',f:r=>nf(r.aov,2)},
+   {h:'Уник. активных',f:r=>nf(r.uniq_active_users)},{h:'Уник. покупателей',f:r=>nf(r.uniq_buyers)},
+   {h:'Поисков',f:r=>si(r.searches)}], C.monthly, r=>r.days<20?'hi2':null);
+
+(function(){
+  const DOW=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  barsV(document.getElementById('p-dow'),{cats:DOW,values:C.dow.map(r=>r.gmv_index),height:210,vw:560,
+    yMin:0.9,yMax:1.05,yTicks:3,yFmt:v=>nf(v,2),label:'индекс GMV',tipFmt:v=>nf(v,3),
+    valueLabels:true,labFmt:v=>nf(v,3),margin:{t:20,r:12,b:26,l:52},
+    colorAt:i=>C.dow[i].gmv_index<1?tok('--s2'):tok('--s1'),aria:'Индекс дня недели'});
+  table('t-dow',[{h:'День',f:(r,i)=>DOW[i]},{h:'Индекс GMV',f:r=>nf(r.gmv_index,3)},
+    {h:'Ср. GMV',f:r=>si(r.gmv_mean)},{h:'Ср. с записью',f:r=>nf(r.visitors_mean,0)},
+    {h:'Ср. покупателей',f:r=>nf(r.buyers_mean,0)},{h:'Конверсия в покупку',f:r=>pc(r.buyer_conv,2)}],C.dow);
+  const g=C.gap_hist,cats=[],vals=[];
+  for(let i=0;i<g.counts.length;i++){cats.push(g.edges[i]);vals.push(g.counts[i]);}
+  barsV(document.getElementById('p-gap'),{cats:cats.map(String),values:vals,height:210,xEvery:5,vw:560,
+    label:'интервалов',yFmt:si,tipFmt:v=>nf(v),tipHead:i=>g.edges[i]+'–'+(g.edges[i+1]-1)+' дней',
+    margin:{t:14,r:12,b:26,l:52},aria:'Гистограмма интервалов между покупками'});
+  table('t-gap',[{h:'Интервал, дней',f:r=>r.a+'–'+r.b},{h:'Наблюдений',f:r=>nf(r.n)},
+    {h:'Доля',f:r=>pc(r.n/4517739,2)}],
+    g.counts.map((n,i)=>({a:g.edges[i],b:g.edges[i+1]-1,n:n})).filter(r=>r.n>0));
+})();
+
+/* ---- 04 selection */
+(function(){
+  const b=C.blocks;
+  barsV(document.getElementById('p-blocks'),{cats:b.map(r=>r.block),values:b.map(r=>r.share_active),
+    height:250,yMin:0,yMax:1.05,yTicks:4,yFmt:v=>pc(v,0),label:'доля активных',tipFmt:v=>pc(v,4),
+    tipHead:i=>b[i].start+' … '+b[i].end,valueLabels:true,labFmt:v=>pc(v,1),
+    colorAt:i=>b[i].share_active>0.9999?tok('--s2'):tok('--s1'),margin:{t:22,r:12,b:30,l:52},
+    aria:'Доля активных пользователей по 30-дневным блокам'});
+  legend('l-blocks',[{n:'Окно отбора — ровно 100.0000%',c:tok('--s2'),sq:true},
+    {n:'Вне окна отбора',c:tok('--s1'),sq:true}]);
+  table('t-blocks',[{h:'Блок',k:'block'},{h:'Начало',k:'start'},{h:'Конец',k:'end'},
+    {h:'Доля активных',f:r=>pc(r.share_active,4)},{h:'Доля покупателей',f:r=>pc(r.share_buyers,2)}],
+    b.slice().reverse(), r=>r.share_active>0.9999?'hi':null);
+})();
+
+table('t-backtest',
+  [{h:'Сетап',k:'lab'},{h:'Якорь',k:'anchor'},{h:'Целевое окно',k:'target_window'},
+   {h:'Когорта',f:r=>nf(r.cohort_size)},{h:'P(активен в цели)',f:r=>pc(r.p_active_in_target,2)},
+   {h:'Нулей в таргете',f:r=>pc(r.share_zero_target,1)},{h:'Ср. таргет',f:r=>nf(r.mean_target,1)},
+   {h:'RMSLE ноль',f:r=>nf(r.rmsle_zero,3)},{h:'RMSLE prev30',f:r=>nf(r.rmsle_prev30,3)},
+   {h:'α*',f:r=>nf(r.best_alpha,2)},{h:'RMSLE α·prev30',f:r=>nf(r.rmsle_best_alpha,3)},
+   {h:'RMSLE лог-лин.',f:r=>nf(r.rmsle_loglin,3)}],
+  C.backtest.map(r=>Object.assign({},r,{lab:
+    r.setup.indexOf('LB-like')===0?'якорь как на ЛБ (цель = окно отбора)':
+    r.setup.indexOf('target inside')===0?'цель внутри зоны 100% активности':
+    r.setup.indexOf('HONEST')===0?'честный: правило отбора воспроизведено':'без правила отбора, все 250k'})),
+  r=>r.p_active_in_target>0.9999?'hi':'hi2');
+
+table('t-cohorts',
+  [{h:'Первое появление',k:'cohort_first_seen'},{h:'Клиентов',f:r=>nf(r.n_users)},{h:'Доля',f:r=>pc(r.share,2)},
+   {h:'Покупали в посл. 30д',f:r=>pc(r.p_buy_last30,1)},{h:'Ср. GMV за период',f:r=>nf(r.mean_lifetime_gmv,0)},
+   {h:'Ср. таргет',f:r=>nf(r.mean_target,1)},{h:'P(таргет>0)',f:r=>pc(r.p_target_pos,1)}], C.cohorts);
+
+/* ---- 05 target */
+(function(){
+  const h=C.target_log_hist, hp=C.prev30_log_hist, cats=[], v1=[], v2=[];
+  for(let i=0;i<h.counts.length;i++){ cats.push(h.edges[i].toFixed(1)); v1.push(h.counts[i]); v2.push(hp.counts[i]); }
+  const host=document.getElementById('p-thist'); host.innerHTML='';
+  const W=1000,H0=280,m={t:16,r:12,b:34,l:56};
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+H0,role:'img','aria-label':'Гистограмма таргета в log1p'},host);
+  const n=cats.length,iw=W-m.l-m.r,ih=H0-m.t-m.b;
+  // scale to the non-zero bins; the two zero columns are clipped and labelled directly
+  let hi=0; for(let i=1;i<n;i++){ hi=Math.max(hi,v1[i],v2[i]); } hi*=1.12;
+  const bw=iw/n, TOP=m.t+16;
+  const Y=v=>Math.max(TOP, m.t+ih-v/hi*ih);
+  for(let i=0;i<=4;i++){ const y=m.t+ih-ih*i/4;
+    E('line',{x1:m.l,x2:W-m.r,y1:y,y2:y,stroke:tok('--rule'),'stroke-width':1},svg);
+    const t=E('text',{x:m.l-8,y:y+3.5,'text-anchor':'end',fill:tok('--ink-3'),'font-size':10,
+      'font-family':'ui-monospace,Menlo,monospace'},svg); t.textContent=si(hi*i/4); }
+  const tip=mkTip(host);
+  for(let i=0;i<n;i++){
+    const x=m.l+i*bw;
+    E('rect',{x:x+1,y:Y(v2[i]),width:bw-2,height:Math.max(ih-(Y(v2[i])-m.t),1),rx:2,
+      fill:tok('--s3'),opacity:.30},svg);
+    E('rect',{x:x+1,y:Y(v1[i]),width:bw-2,height:Math.max(ih-(Y(v1[i])-m.t),1),rx:2,
+      fill:i===0?tok('--s2'):tok('--s1')},svg);
+    if(i===0){ // axis-break marks + direct labels for the clipped zero column
+      for(let k=0;k<2;k++){
+        E('line',{x1:x-2,x2:x+bw+2,y1:TOP+9+k*5,y2:TOP+4+k*5,stroke:tok('--surface'),'stroke-width':3.2},svg); }
+      const l1=E('text',{x:x+bw+8,y:TOP+3,fill:tok('--s2'),'font-size':10.5,'font-weight':700,
+        'font-family':'ui-monospace,Menlo,monospace'},svg);
+      l1.textContent=nf(v1[0])+' — таргет ≈ 0';
+      const l2=E('text',{x:x+bw+8,y:TOP+16,fill:tok('--ink-3'),'font-size':10.5,
+        'font-family':'ui-monospace,Menlo,monospace'},svg);
+      l2.textContent=nf(v2[0])+' — prev30 ≈ 0';
+    }
+    const hz=E('rect',{x:x,y:m.t,width:bw,height:ih,fill:'transparent'},svg);
+    hz.addEventListener('mousemove',ev=>{ const hr=host.getBoundingClientRect();
+      const lo=Math.expm1(h.edges[i]),up=Math.expm1(h.edges[i+1]);
+      showTip(tip,ev.clientX-hr.left,ev.clientY-hr.top-10,
+        '<span class="th">'+(i===0?'GMV = 0':'GMV '+nf(lo,0)+' – '+nf(up,0))+'</span>'+
+        '<div class="tr"><span><i style="background:'+(i===0?tok('--s2'):tok('--s1'))+'"></i>таргет</span><b>'+nf(v1[i])+'</b></div>'+
+        '<div class="tr"><span><i style="background:'+tok('--s3')+'"></i>prev30</span><b>'+nf(v2[i])+'</b></div>'); });
+    hz.addEventListener('mouseleave',()=>hideTip(tip));
+  }
+  E('line',{x1:m.l,x2:W-m.r,y1:m.t+ih,y2:m.t+ih,stroke:tok('--rule-strong'),'stroke-width':1},svg);
+  for(let i=0;i<n;i+=6){ const t=E('text',{x:m.l+i*bw+bw/2,y:H0-16,'text-anchor':'middle',fill:tok('--ink-3'),
+    'font-size':10,'font-family':'ui-monospace,Menlo,monospace'},svg);
+    t.textContent=i===0?'0':nf(Math.expm1(h.edges[i]),0); }
+  const t2=E('text',{x:m.l+iw/2,y:H0-2,'text-anchor':'middle',fill:tok('--ink-3'),'font-size':10,
+    'font-family':'ui-monospace,Menlo,monospace'},svg); t2.textContent='GMV за 30 дней (шкала log1p)';
+  legend('l-thist',[{n:'Таргет: 2026-01-15 … 02-13',c:tok('--s1'),sq:true},
+    {n:'Нулевая корзина — столбец обрезан, значение подписано',c:tok('--s2'),sq:true},
+    {n:'GMV за предыдущие 30 дней',c:tok('--s3'),o:.35,sq:true}]);
+})();
+
+table('t-tdist',[{h:'Корзина таргета',k:'bucket'},{h:'Клиентов',f:r=>nf(r.n_users)},
+  {h:'Доля клиентов',f:r=>pc(r.share,2)},{h:'Сумма GMV',f:r=>si(r.gmv_sum)},
+  {h:'Доля GMV',f:r=>pc(r.gmv_share,2)}], C.target_dist, r=>r.bucket==='0'?'hi':null);
+
+(function(){
+  const L=C.lorenz, host=document.getElementById('p-lorenz'); host.innerHTML='';
+  const W=560,H0=290,m={t:14,r:16,b:34,l:48};
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+H0,role:'img','aria-label':'Кривая Лоренца'},host);
+  const iw=W-m.l-m.r,ih=H0-m.t-m.b;
+  const X=v=>m.l+v*iw, Y=v=>m.t+ih-v*ih;
+  for(let i=0;i<=4;i++){ const y=Y(i/4);
+    E('line',{x1:m.l,x2:W-m.r,y1:y,y2:y,stroke:tok('--rule'),'stroke-width':1},svg);
+    const t=E('text',{x:m.l-8,y:y+3.5,'text-anchor':'end',fill:tok('--ink-3'),'font-size':10,
+      'font-family':'ui-monospace,Menlo,monospace'},svg); t.textContent=(i*25)+'%'; }
+  E('line',{x1:X(0),y1:Y(0),x2:X(1),y2:Y(1),stroke:tok('--ink-3'),'stroke-width':1.5,opacity:.5},svg);
+  let d='';
+  L.pop.forEach((p,i)=>{ d+=(i?'L':'M')+X(p)+' '+Y(L.gmv[i]); });
+  E('path',{d:d+'L'+X(1)+' '+Y(0)+'Z',fill:tok('--s1'),opacity:.10},svg);
+  E('path',{d:d,fill:'none',stroke:tok('--s1'),'stroke-width':2},svg);
+  for(let i=0;i<=4;i++){ const t=E('text',{x:X(i/4),y:H0-16,'text-anchor':'middle',fill:tok('--ink-3'),
+    'font-size':10,'font-family':'ui-monospace,Menlo,monospace'},svg); t.textContent=(i*25)+'%'; }
+  const t2=E('text',{x:m.l+iw/2,y:H0-2,'text-anchor':'middle',fill:tok('--ink-3'),'font-size':10,
+    'font-family':'ui-monospace,Menlo,monospace'},svg); t2.textContent='доля клиентов (от бедных к богатым)';
+  const tip=mkTip(host);
+  const dot=E('circle',{r:4.5,fill:tok('--s1'),stroke:tok('--surface'),'stroke-width':2,opacity:0},svg);
+  const hit=E('rect',{x:m.l,y:m.t,width:iw,height:ih,fill:'transparent'},svg);
+  hit.addEventListener('mousemove',ev=>{ const r=svg.getBoundingClientRect();
+    const px=(ev.clientX-r.left)/r.width*W; let i=Math.round((px-m.l)/iw*100); i=Math.max(0,Math.min(100,i));
+    dot.setAttribute('cx',X(L.pop[i])); dot.setAttribute('cy',Y(L.gmv[i])); dot.setAttribute('opacity',1);
+    const hr=host.getBoundingClientRect();
+    showTip(tip,ev.clientX-hr.left,ev.clientY-hr.top-10,
+      '<span class="th">нижние '+pc(L.pop[i],0)+' клиентов</span>'+
+      '<div class="tr"><span>доля GMV</span><b>'+pc(L.gmv[i],1)+'</b></div>'); });
+  hit.addEventListener('mouseleave',()=>{hideTip(tip);dot.setAttribute('opacity',0);});
+  legend('l-lorenz',[{n:'Фактическое распределение GMV',c:tok('--s1')},
+    {n:'Полное равенство',c:tok('--ink-3'),o:.6}]);
+})();
+
+table('t-conc',[{h:'Верхние',f:r=>pc(r.top_share_users,1)},{h:'Клиентов',f:r=>nf(r.n_users)},
+  {h:'Доля GMV',f:r=>pc(r.gmv_share,1)}], C.concentration);
+
+(function(){
+  const td=C.target_dist, host=document.getElementById('p-tshare');
+  barsH(host,{cats:td.map(r=>r.bucket==='0'?'0 (нет покупок)':r.bucket),
+    values:td.map(r=>r.gmv_share),xMax:0.25,left:132,rowH:22,vw:560,right:48,
+    vFmt:v=>pc(v,1),label:'доля суммарного GMV',tipFmt:v=>pc(v,2),
+    colorAt:i=>td[i].bucket==='0'?tok('--s2'):tok('--s1'),
+    aria:'Доля GMV по корзинам таргета'});
+  legend('l-tshare',[{n:'Доля суммарного GMV, приходящаяся на корзину',c:tok('--s1'),sq:true},
+    {n:'Клиенты без покупок',c:tok('--s2'),sq:true}]);
+})();
+
+(function(){
+  const T=C.transition;
+  heatmap(document.getElementById('p-trans'),{rows:T.labels,cols:T.labels,matrix:T.matrix,
+    rowCounts:T.row_counts,aria:'Матрица переходов'});
+  legend('l-trans',[{n:'Доля строки, %: светлее — реже, темнее — чаще',c:tok('--hm4'),sq:true}]);
+  table('t-trans',[{h:'prev30 \\ таргет',k:'r'}].concat(T.labels.map((l,j)=>({h:l,f:r=>pc(r.m[j],1)}))),
+    T.labels.map((l,i)=>({r:l+'  (n='+nf(T.row_counts[i])+')',m:T.matrix[i]})));
+})();
+
+/* ---- 06 predictors */
+(function(){
+  const NAMES={buy_days_life:'дней с покупкой за всю историю',prev180_gmv:'GMV за 180 дней',
+    prev90_gmv:'GMV за 90 дней',lifetime_gmv:'GMV за всю историю',prev60_gmv:'GMV за 60 дней',
+    buy_days_30d:'дней с покупкой за 30 дней',orders_30d:'заказов за 30 дней',prev30_gmv:'GMV за 30 дней',
+    carts_30d:'товаров в корзину за 30 дней',visit_days_90d:'дней с записью за 90 дней',
+    engaged_days_30d:'дней с активностью за 30 дней',visit_days_30d:'дней с записью за 30 дней',
+    searches_30d:'поисков за 30 дней',recency_days:'дней с последней активности',
+    recency_buy_days:'дней с последней покупки'};
+  const rows=C.corr.slice().sort((a,b)=>Math.abs(b.pearson_log1p_vs_log1p_target)-Math.abs(a.pearson_log1p_vs_log1p_target));
+  barsH(document.getElementById('p-corr'),{cats:rows.map(r=>NAMES[r.feature]||r.feature),
+    values:rows.map(r=>r.pearson_log1p_vs_log1p_target),xMin:-0.6,xMax:0.7,left:270,rowH:23,
+    vFmt:v=>nf(v,3),label:'r (log1p)',
+    colorAt:i=>rows[i].pearson_log1p_vs_log1p_target<0?tok('--s2'):tok('--s1'),
+    aria:'Корреляция признаков с таргетом'});
+  table('t-corr',[{h:'Признак',f:r=>NAMES[r.feature]||r.feature},{h:'Код',k:'feature'},
+    {h:'r (log1p ↔ log1p)',f:r=>nf(r.pearson_log1p_vs_log1p_target,3)},
+    {h:'Спирмен',f:r=>nf(r.spearman_vs_target,3)},{h:'r (сырые)',f:r=>nf(r.pearson_raw,3)}],rows);
+})();
+
+(function(){
+  const d=C.by_prev30, cats=d.map(r=>r.prev30_group==='prev30 = 0'?'нет':r.prev30_group.replace('decile ','д'));
+  barsV(document.getElementById('p-dec1'),{cats:cats,values:d.map(r=>r.p_target_pos),height:230,vw:560,
+    yMin:0,yMax:1,yTicks:4,yFmt:v=>pc(v,0),label:'P(таргет>0)',tipFmt:v=>pc(v,1),
+    tipHead:i=>d[i].prev30_group==='prev30 = 0'?'GMV за 30 дней = 0':
+      'дециль '+(i)+': GMV '+nf(d[i].prev30_lo,0)+'–'+nf(d[i].prev30_hi,0),
+    valueLabels:true,labFmt:v=>pc(v,0),colorAt:i=>i===0?tok('--s2'):tok('--s1'),
+    margin:{t:20,r:12,b:26,l:52},aria:'Вероятность покупки по децилям'});
+  const rr=d.slice(1);
+  barsV(document.getElementById('p-dec2'),{cats:rr.map(r=>r.prev30_group.replace('decile ','д')),
+    values:rr.map(r=>r.ratio_target_to_prev30),height:230,vw:560,yMin:0,yTicks:4,yFmt:v=>nf(v,1),
+    label:'таргет / prev30',tipFmt:v=>nf(v,2),
+    tipHead:i=>'дециль '+(i+1)+': GMV '+nf(rr[i].prev30_lo,0)+'–'+nf(rr[i].prev30_hi,0),
+    valueLabels:true,labFmt:v=>nf(v,2),colorAt:i=>rr[i].ratio_target_to_prev30<1?tok('--s2'):tok('--s1'),
+    margin:{t:20,r:12,b:26,l:52},aria:'Отношение таргета к prev30 по децилям'});
+  table('t-dec',[{h:'Группа',f:r=>r.prev30_group==='prev30 = 0'?'GMV за 30 дней = 0':r.prev30_group.replace('decile ','дециль ')},
+    {h:'Границы prev30',f:r=>r.prev30_hi===0?'0':nf(r.prev30_lo,0)+' – '+nf(r.prev30_hi,0)},
+    {h:'Клиентов',f:r=>nf(r.n_users)},{h:'P(таргет>0)',f:r=>pc(r.p_target_pos,1)},
+    {h:'Ср. таргет',f:r=>nf(r.mean_target,1)},{h:'Медиана положит.',f:r=>nf(r.median_target_pos,1)},
+    {h:'Ср. log1p',f:r=>nf(r.mean_log1p_target,3)},
+    {h:'таргет / prev30',f:r=>r.ratio_target_to_prev30==null?'—':nf(r.ratio_target_to_prev30,2)}],
+    d, r=>r.prev30_group==='prev30 = 0'?'hi':null);
+})();
+
+(function(){
+  const L=D.tables.lag;
+  barsV(document.getElementById('p-lag'),{cats:L.map(r=>'−'+r.lag+'×30д'),values:L.map(r=>r.r),
+    height:230,yMin:0,yMax:0.75,yTicks:3,yFmt:v=>nf(v,2),label:'корреляция',tipFmt:v=>nf(v,3),
+    tipHead:i=>'блок '+L[i].block+', лаг '+L[i].lag+' × 30 дней',valueLabels:true,labFmt:v=>nf(v,2),
+    margin:{t:20,r:12,b:30,l:52},aria:'Затухание корреляции по блокам'});
+  table('t-lag',[{h:'Лаг, блоков по 30 дней',k:'lag'},{h:'Блок',k:'block'},
+    {h:'Корреляция log1p с последним блоком',f:r=>nf(r.r,4)}],L);
+})();
+
+table('t-rec',[{h:'Дней с последней активности',f:r=>r.recency_bucket==='0-0'?'0 (активен в день якоря)':r.recency_bucket},
+  {h:'Клиентов',f:r=>nf(r.n_users)},{h:'Доля',f:r=>pc(r.share_users,1)},
+  {h:'P(таргет>0)',f:r=>pc(r.p_target_pos,1)},{h:'Ср. таргет',f:r=>nf(r.mean_target,1)},
+  {h:'Медиана положит.',f:r=>nf(r.median_target_pos,1)},{h:'Ср. log1p',f:r=>nf(r.mean_log1p_target,3)},
+  {h:'Доля всего таргета',f:r=>pc(r.gmv_share,1)},{h:'Ср. prev30',f:r=>nf(r.mean_prev30,1)}], C.by_recency);
+
+/* ---- 07 baselines */
+(function(){
+  const NAMES={'const 0':'константа 0','prev30 (naive AR = sample_submit)':'prev30 — наивная AR (sample_submit)',
+    'prev60 / 2':'prev60 / 2','prev90 / 3':'prev90 / 3','prev180 / 6':'prev180 / 6',
+    'lifetime mean per 30d':'средний темп за всю историю',
+    'mean(prev30, prev60/2, prev90/3)':'среднее из prev30, prev60/2, prev90/3',
+    'oracle: mean log-target per prev30 bucket':'оракул: среднее log-таргета по корзине prev30',
+    'oracle: prev30 bucket x recency bucket':'оракул: корзина prev30 × recency'};
+  const rows=C.baselines.slice().sort((a,b)=>b.rmsle-a.rmsle).map(r=>{
+    let n=NAMES[r.baseline]||r.baseline;
+    n=n.replace(/optimal constant \(([\d.]+)\)/,'оптимальная константа ($1)')
+       .replace(/alpha\*prev30 \(alpha=([\d.]+)\)/,'α·prev30, α = $1')
+       .replace(/expm1\((.+)\)/,'expm1($1) — сжатие в логах');
+    return Object.assign({},r,{n:n}); });
+  barsH(document.getElementById('p-base'),{cats:rows.map(r=>r.n),values:rows.map(r=>r.rmsle),
+    xMin:1.6,xMax:3.35,left:330,rowH:26,vFmt:v=>nf(v,3),label:'RMSLE',
+    colorAt:i=>/наивная AR/.test(rows[i].n)?tok('--s2'):(/оракул/.test(rows[i].n)?tok('--s3'):tok('--s1')),
+    aria:'RMSLE бейзлайнов'});
+  legend('l-base',[{n:'Бейзлайны',c:tok('--s1'),sq:true},
+    {n:'Наивная авторегрессия из ноутбука организаторов',c:tok('--s2'),sq:true},
+    {n:'Оракулы — оценка потолка сверху',c:tok('--s3'),sq:true}]);
+  table('t-base',[{h:'Бейзлайн',k:'n'},{h:'RMSLE',f:r=>nf(r.rmsle,4)},
+    {h:'Δ к наивному',f:r=>{const d=r.rmsle-2.195065;
+      if(Math.abs(d)<5e-4)return '—';
+      return '<span class="'+(d<0?'pos':'neg')+'">'+(d>0?'+':'')+nf(d,3)+'</span>';}},
+    {h:'Ср. предсказание',f:r=>nf(r.mean_pred,1)},{h:'Доля нулевых предсказаний',f:r=>pc(r.share_pred_zero,1)}],
+    rows.slice().sort((a,b)=>a.rmsle-b.rmsle), r=>/наивная AR/.test(r.n)?'hi':null);
+})();
+
+table('t-head',[{h:'Признаки в ячейке',f:r=>r.features.replace(/prev30_bucket/,'корзина prev30')
+    .replace(/recency/,'recency').replace(/buydays90/,'дней с покупкой за 90д')
+    .replace(/visitdays30/,'дней с записью за 30д').replace(/ord30/,'заказов за 30д')},
+  {h:'Ячеек',f:r=>nf(r.n_cells)},{h:'RMSLE (in-sample)',f:r=>nf(r.rmsle_in_sample_oracle,4)}],
+  C.headroom, r=>r.n_cells===334?'hi2':null);
+
+/* ---- 08 seasonality */
+(function(){
+  const s=C.seasonal.slice();
+  const lab=s.map(r=>r.anchor.indexOf('CALENDAR')===0?'2025-02-13 ★':
+    (r.anchor.indexOf('VALIDATION')===0?'2026-01-14 ✓':r.anchor));
+  barsV(document.getElementById('p-season'),{cats:lab,values:s.map(r=>r.sum_target_prev30_ratio),
+    height:250,yMin:0,yMax:1.3,yTicks:4,yFmt:v=>nf(v,2),label:'таргет / prev30',tipFmt:v=>nf(v,3),
+    tipHead:i=>s[i].target,valueLabels:true,labFmt:v=>nf(v,3),
+    colorAt:i=>s[i].anchor.indexOf('CALENDAR')===0?tok('--s2'):
+      (s[i].anchor.indexOf('VALIDATION')===0?tok('--s3'):tok('--s1')),
+    margin:{t:22,r:12,b:44,l:52},rotate:true,aria:'Отношение таргета к prev30 по якорям'});
+  legend('l-season',[{n:'★ календарный аналог тестового окна (2025)',c:tok('--s2'),sq:true},
+    {n:'✓ валидационное окно (2026-01-15 … 02-13)',c:tok('--s3'),sq:true},
+    {n:'прочие якоря',c:tok('--s1'),sq:true}]);
+  table('t-season',[{h:'Якорь',f:r=>r.anchor.replace('CALENDAR ANALOGUE ','★ ').replace('VALIDATION ','✓ ').replace(' -> Feb14-Mar15','')},
+    {h:'Целевое окно',k:'target'},{h:'таргет / prev30',f:r=>nf(r.sum_target_prev30_ratio,3)},
+    {h:'Нулей',f:r=>pc(r.share_zero_target,1)},{h:'α*',f:r=>nf(r.best_alpha,2)},
+    {h:'RMSLE α·prev30',f:r=>nf(r.rmsle_alpha,3)},{h:'b',f:r=>nf(r.loglin_b,3)},{h:'c',f:r=>nf(r.loglin_c,2)},
+    {h:'RMSLE лог-лин.',f:r=>nf(r.rmsle_loglin,3)},{h:'RMSLE prev30',f:r=>nf(r.rmsle_prev30,3)}],
+    C.seasonal, r=>r.anchor.indexOf('CALENDAR')===0?'hi':(r.anchor.indexOf('VALIDATION')===0?'hi2':null));
+})();
+
+table('t-yoy',[{h:'Окно',k:'label'},{h:'Даты',k:'window'},{h:'GMV',f:r=>si(r.gmv)},
+  {h:'Активных',f:r=>nf(r.active)},{h:'Покупателей',f:r=>nf(r.buyers)},
+  {h:'GMV на активного',f:r=>nf(r.gmv_per_active,1)},{h:'Ср. чек товара',f:r=>nf(r.aov,2)}],
+  D.tables.yoy, r=>/TEST/.test(r.label)?'hi':(/VALID/.test(r.label)?'hi2':null));
+
+/* ---- 09 actions */
+(function(){
+  const A=[
+    ['Считать таргет и метрику в лог-пространстве','Обучать регрессию на <code>log1p(gmv)</code> с MSE — это ровно метрика соревнования. Предсказание возвращать через <code>expm1</code>. Альтернатива — Tweedie/Poisson на сырых значениях, но тогда калибровка под RMSLE делается отдельно.'],
+    ['Заложить сезонную поправку и проверить её на паблике','Валидация приходится на сезонный провал, тест — на подъём 23 февраля и 8 марта. Держать множитель ×1.10…×1.25 как отдельный гиперпараметр и подобрать его по 50 000 клиентов паблик-лидерборда.'],
+    ['Строить фичи частоты, а не только суммы','Дней с покупкой за всю историю коррелирует с таргетом сильнее, чем GMV за 30 дней (0.630 против 0.557). Набор минимума: дни с покупкой за 30/90/180/всю историю, recency покупки, recency активности, число заказов, размер корзины, интервал между покупками.'],
+    ['Разделить задачу на две','P(покупка за 30 дней) × E[GMV | покупка]. Классификатор и регрессор на положительных обучаются на разных сигналах: первый — на recency и частоте, второй — на среднем чеке. Произведение калибруется под RMSLE отдельно.'],
+    ['Взять несколько якорей для обучения','Якоря с шагом 14–30 дней дают в разы больше обучающих пар. Но целевые окна внутри 2025-11-16 … 2026-02-13 заражены отбором (100% активности) — их брать можно, помня о смещении; для честной валидации нужен якорь не позже 2025-10-16.'],
+    ['Использовать длинную историю','Корреляция GMV с таргетом выходит на плато ~0.53 даже на лаге в год. Окна 30/60/90/180/365 дней плюс агрегаты за всю историю — все информативны, обрезать историю не нужно.'],
+    ['Не выбрасывать пустые строки','18% строк не содержат активности, но факт наличия строки — сигнал присутствия. Отдельно считать дни-визиты и дни-активности.'],
+    ['Сжать данные перед обучением','9 из 18 колонок восстанавливаются точно, счётчики влезают в Int16. Плотная матрица 250k × 409 в float32 — 409 МБ, оконные агрегаты через cumsum считаются за доли секунды.'],
+    ['Сверять с бейзлайнами','Ориентиры на валидации: 3.204 — константа 0, 2.195 — наивная AR из ноутбука, 1.901 — сжатие в логах без ML, 1.733 — оракул на трёх признаках. Модель, не бьющая 1.90, не окупает себя.'],
+  ];
+  const h=document.getElementById('acts');
+  A.forEach((a,i)=>{ const li=H('li',{},h); H('span',{class:'m',text:String(i+1).padStart(2,'0')},li);
+    const d=H('div',{},li); H('b',{text:a[0]},d); H('p',{html:a[1]},d); });
+  document.getElementById('fdate').textContent='EDA от 2026-08-11';
+})();
+
+})();
+</script>

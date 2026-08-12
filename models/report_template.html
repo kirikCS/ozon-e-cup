@@ -1,0 +1,240 @@
+<title>Результаты тестов моделей · Прогноз 30-дневного GMV — Ozon E-CUP</title>
+
+<script id="rows" type="application/json">__DATA__</script>
+
+<style>
+:root{
+  color-scheme: light;
+  --ground:#f5f7fa;      --surface:#ffffff;     --surface-2:#eef2f7;   --surface-3:#e6ebf2;
+  --ink:#0d1117;         --ink-2:#47525f;       --ink-3:#79848f;
+  --rule:#e0e6ee;        --rule-strong:#ccd5e0;
+  --accent:#2a78d6;      --accent-soft:#e8f0fc;
+  --alert:#eb6834;       --alert-soft:#fdeee7;
+  --aqua:#1baf7a;        --aqua-soft:#e5f6ef;
+  --shadow:0 1px 2px rgba(13,17,23,.05), 0 8px 24px -16px rgba(13,17,23,.22);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme: dark;
+  --ground:#0c1015;      --surface:#141a22;     --surface-2:#1b222c;   --surface-3:#232b36;
+  --ink:#e9eef4;         --ink-2:#a0abb9;       --ink-3:#6e7a88;
+  --rule:#232b36;        --rule-strong:#323c49;
+  --accent:#3987e5;      --accent-soft:#16283f;
+  --alert:#d95926;       --alert-soft:#331c12;
+  --aqua:#199e70;        --aqua-soft:#0f2b22;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+}}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0c1015;      --surface:#141a22;     --surface-2:#1b222c;   --surface-3:#232b36;
+  --ink:#e9eef4;         --ink-2:#a0abb9;       --ink-3:#6e7a88;
+  --rule:#232b36;        --rule-strong:#323c49;
+  --accent:#3987e5;      --accent-soft:#16283f;
+  --alert:#d95926;       --alert-soft:#331c12;
+  --aqua:#199e70;        --aqua-soft:#0f2b22;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:15.5px;line-height:1.62;letter-spacing:-0.003em;-webkit-font-smoothing:antialiased}
+h1,h2,.eyebrow,.chip,th,.tile-v,.btn,code,.fam,.mono{
+  font-family:ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px 90px;min-width:0}
+.mast{padding:44px 0 0;border-bottom:1px solid var(--rule);margin-bottom:30px}
+.eyebrow{font-size:10.5px;letter-spacing:.19em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 16px}
+h1{font-size:clamp(27px,4vw,42px);line-height:1.07;letter-spacing:-0.035em;font-weight:680;margin:0 0 18px;max-width:20ch;text-wrap:balance}
+.deck{font-size:17px;line-height:1.55;color:var(--ink-2);max-width:66ch;margin:0 0 24px}
+.deck b{color:var(--ink);font-weight:600}
+p{max-width:70ch;margin:0 0 14px}
+code{font-size:.87em;background:var(--surface-2);padding:1.5px 5px;border-radius:4px}
+section{margin:0 0 48px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin:0 0 6px;padding-top:6px;border-top:2px solid var(--ink)}
+.sec-n{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--ink-3);padding-top:5px}
+h2{font-size:23px;line-height:1.2;letter-spacing:-0.03em;font-weight:660;margin:0;text-wrap:balance}
+.sec-lede{color:var(--ink-2);max-width:70ch;margin:12px 0 20px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);
+  border:1px solid var(--rule);border-radius:10px;overflow:hidden;margin:0 0 34px}
+.tile{background:var(--surface);padding:14px 16px 13px}
+.tile-k{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin:0 0 6px;
+  font-family:ui-monospace,Menlo,monospace}
+.tile-v{font-size:24px;line-height:1;font-weight:640;letter-spacing:-0.028em;margin:0 0 5px}
+.tile-s{font-size:11.5px;color:var(--ink-3);line-height:1.35;margin:0}
+.callout{border-left:3px solid var(--accent);background:var(--accent-soft);padding:15px 18px;
+  border-radius:0 8px 8px 0;margin:20px 0}
+.callout.warn{border-color:var(--alert);background:var(--alert-soft)}
+.callout p{margin:0;max-width:68ch;font-size:14.5px}
+.callout p+p{margin-top:9px}
+.callout .lbl{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  font-weight:600;display:block;margin-bottom:7px;color:var(--accent)}
+.callout.warn .lbl{color:var(--alert)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px;padding:12px 14px;
+  background:var(--surface);border:1px solid var(--rule);border-radius:10px;position:sticky;top:0;z-index:20;
+  box-shadow:var(--shadow)}
+.filters .lab{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
+  font-family:ui-monospace,Menlo,monospace}
+.btn{font-size:11.5px;padding:4px 10px;border-radius:6px;border:1px solid var(--rule-strong);
+  background:var(--surface-2);color:var(--ink-2);cursor:pointer;white-space:nowrap;font-family:ui-monospace,Menlo,monospace}
+.btn:hover{color:var(--ink);border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.count{font-size:11.5px;color:var(--ink-3);font-family:ui-monospace,Menlo,monospace;margin-left:auto}
+.tscroll{overflow-x:auto;border:1px solid var(--rule);border-radius:10px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:600;text-align:right;
+  padding:10px 12px;border-bottom:1px solid var(--rule-strong);background:var(--surface-2);white-space:nowrap}
+th:nth-child(2),th:nth-child(3),th:last-child{text-align:left}
+td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2);text-align:right;white-space:nowrap}
+td.nm{color:var(--ink);font-weight:600;text-align:left;white-space:normal;min-width:250px}
+td.no{text-align:left}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface-2)}
+tr.best td{background:var(--aqua-soft)}
+tr.best:hover td{background:var(--aqua-soft)}
+tr.naive td{background:var(--alert-soft)}
+tr.naive:hover td{background:var(--alert-soft)}
+.fam{font-size:10px;padding:2.5px 7px;border-radius:4px;background:var(--surface-3);color:var(--ink-2);white-space:nowrap}
+.bar{display:inline-block;height:8px;border-radius:4px;background:var(--accent);vertical-align:middle;margin-right:7px}
+.bar.g{background:var(--aqua)} .bar.r{background:var(--alert)}
+.note{font-size:11.5px;color:var(--ink-3);margin:9px 0 0;max-width:82ch;line-height:1.5;white-space:normal}
+td.note-cell{text-align:left;white-space:normal;font-size:11.5px;color:var(--ink-3);max-width:290px;min-width:190px}
+ul.plain{margin:8px 0 14px;padding-left:20px;max-width:70ch}
+ul.plain li{margin:0 0 7px}
+footer{border-top:1px solid var(--rule);margin-top:16px;padding-top:20px;font-size:12px;color:var(--ink-3);
+  font-family:ui-monospace,Menlo,monospace;display:flex;flex-wrap:wrap;gap:6px 22px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header class="mast">
+  <p class="eyebrow">Ozon E-CUP · Search LTV · протокол экспериментов</p>
+  <h1>Результаты тестов: <span id="h-n">—</span> моделей на валидации</h1>
+  <p class="deck">Каждая модель обучена и замерена по единому протоколу на прокси-таргете
+  <code>2026-01-15 … 2026-02-13</code>, все 250 000 клиентов. Ни один гиперпараметр не подбирался
+  на валидационном окне. Метрика — RMSLE, наивная авторегрессия из baseline даёт <b>2.1951</b>.</p>
+</header>
+
+<div class="tiles" id="tiles"></div>
+
+<section id="proto">
+  <div class="sec-head"><span class="sec-n">00</span><h2>Протокол</h2></div>
+  <p class="sec-lede">Два независимых замера, чтобы поймать и качество, и смещение из-за критерия отбора
+  пользователей, найденного в EDA.</p>
+  <ul class="plain">
+    <li><b>RMSLE val</b> — якорь <code>2026-01-14</code>, таргет <code>2026-01-15 … 02-13</code>, все 250 000
+    клиентов. Это структурный аналог лидерборда. ML-модели обучены на 8 якорях со сдвигом 14 дней,
+    целевые окна которых заканчиваются не позже 2026-02-13.</li>
+    <li><b>RMSLE honest</b> — якорь <code>2025-10-16</code>, таргет <code>2025-10-17 … 11-15</code>, когорта
+    из 197 379 клиентов, для которой воспроизведён критерий отбора организаторов. Обучение — на отдельном
+    наборе якорей, целевые окна которых заканчиваются не позже 2025-10-16. Ни одна из этих моделей не видела
+    данных из своего целевого окна.</li>
+    <li>Параметры бейзлайнов (α, b, c, λ, α/β Кростона) подобраны на четырёх обучающих якорях, а не на
+    валидации — поэтому их числа честны и сравнимы с ML.</li>
+    <li>Ансамбли из тура T6 подобраны на половине пользователей и замерены на другой половине.</li>
+  </ul>
+</section>
+
+<section id="tbl">
+  <div class="sec-head"><span class="sec-n">01</span><h2>Сводная таблица</h2></div>
+  <p class="sec-lede">Отсортировано по RMSLE на валидации. Зелёным — лучший результат, оранжевым —
+  наивный бейзлайн организаторов.</p>
+  <div class="filters">
+    <span class="lab">Семейство</span><span id="fam" style="display:contents"></span>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="tscroll"><table>
+    <thead><tr><th>#</th><th>Модель</th><th>Семейство</th><th>RMSLE val</th><th>RMSLE honest</th>
+      <th>Δ к наивному</th><th>сек</th><th>Примечание</th></tr></thead>
+    <tbody id="tb"></tbody>
+  </table></div>
+</section>
+
+<section id="fam">
+  <div class="sec-head"><span class="sec-n">02</span><h2>Лучшее в каждом семействе</h2></div>
+  <div class="tscroll"><table>
+    <thead><tr><th>Семейство</th><th>Лучшая модель</th><th>RMSLE val</th><th>RMSLE honest</th><th>Испытано</th></tr></thead>
+    <tbody id="fb"></tbody>
+  </table></div>
+</section>
+
+<footer>
+  <span>Ozon E-CUP · Search LTV</span><span>эксперименты на RTX 5060 Ti / 23 CPU / 98 GB</span>
+  <span><span id="f-n">—</span> моделей</span><span>август 2026</span>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const R = JSON.parse(document.getElementById('rows').textContent);
+const NAIVE = 2.19506;
+const FAMRU = {baseline:'бейзлайны',intermittent:'прерывистый спрос',btyd:'BTYD / CLV',gbdt:'бустинг',
+  'two-stage':'двухстадийные',neural:'нейросети',sequence:'sequence',ensemble:'ансамбли',linear:'линейные'};
+const nf=(v,d)=>v==null?'—':v.toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d}).replace(/ /g,' ');
+const best = Math.min(...R.map(r=>r.rmsle_val));
+const worst = Math.max(...R.map(r=>r.rmsle_val));
+
+document.getElementById('h-n').textContent = R.length;
+document.getElementById('f-n').textContent = R.length;
+
+(function(){
+  const fams = new Set(R.map(r=>r.family));
+  const nBetter = R.filter(r=>r.rmsle_val < NAIVE).length;
+  const b = R[0];
+  const t=[['Моделей испытано',R.length,'в '+fams.size+' семействах'],
+    ['Лучший RMSLE',nf(best,4),b.model.slice(0,40)],
+    ['Бьют наивный',nBetter,'из '+R.length+' моделей'],
+    ['Выигрыш у baseline',nf(NAIVE-best,3),'2,1951 → '+nf(best,4)],
+    ['Медианное время',nf(median(R.map(r=>r.secs).filter(x=>x!=null)),0)+' с','на модель']];
+  const h=document.getElementById('tiles');
+  t.forEach(r=>{const d=document.createElement('div');d.className='tile';
+    d.innerHTML='<p class="tile-k">'+r[0]+'</p><p class="tile-v">'+r[1]+'</p><p class="tile-s">'+r[2]+'</p>';
+    h.appendChild(d);});
+})();
+function median(a){if(!a.length)return null;const s=a.slice().sort((x,y)=>x-y);return s[Math.floor(s.length/2)];}
+
+let cur='ALL';
+const famHost=document.getElementById('fam');
+function mk(l,v){const b=document.createElement('button');b.className='btn';b.type='button';b.textContent=l;
+  b.setAttribute('aria-pressed',cur===v);b.addEventListener('click',()=>{cur=v;render();});b._v=v;famHost.appendChild(b);}
+mk('все','ALL');
+[...new Set(R.map(r=>r.family))].forEach(f=>mk(FAMRU[f]||f,f));
+
+function render(){
+  document.querySelectorAll('#fam .btn').forEach(b=>b.setAttribute('aria-pressed',b._v===cur));
+  const tb=document.getElementById('tb');tb.innerHTML='';
+  const list=R.filter(r=>cur==='ALL'||r.family===cur);
+  list.forEach(r=>{
+    const tr=document.createElement('tr');
+    if(r.rmsle_val===best)tr.className='best';
+    if(/naive AR/.test(r.model))tr.className='naive';
+    const w=Math.max(2,Math.round(120*(worst-r.rmsle_val)/(worst-best)));
+    const cls=r.rmsle_val<=best+0.02?'g':(r.rmsle_val>=NAIVE?'r':'');
+    const d=r.delta_naive;
+    tr.innerHTML='<td class="no">'+r.rank+'</td>'+
+      '<td class="nm">'+r.model+'</td>'+
+      '<td class="no"><span class="fam">'+(FAMRU[r.family]||r.family)+'</span></td>'+
+      '<td><span class="bar '+cls+'" style="width:'+w+'px"></span><b>'+nf(r.rmsle_val,4)+'</b></td>'+
+      '<td>'+nf(r.rmsle_hon,4)+'</td>'+
+      '<td style="color:'+(d<0?'var(--aqua)':'var(--alert)')+';font-weight:600">'+(d>0?'+':'')+nf(d,3)+'</td>'+
+      '<td>'+(r.secs==null?'—':nf(r.secs,0))+'</td>'+
+      '<td class="note-cell">'+(r.notes||'')+'</td>';
+    tb.appendChild(tr);
+  });
+  document.getElementById('count').textContent=list.length+' из '+R.length;
+}
+render();
+
+(function(){
+  const by={};R.forEach(r=>{(by[r.family]=by[r.family]||[]).push(r);});
+  const fb=document.getElementById('fb');
+  Object.keys(by).sort((a,b)=>Math.min(...by[a].map(r=>r.rmsle_val))-Math.min(...by[b].map(r=>r.rmsle_val)))
+    .forEach(f=>{const b=by[f].reduce((p,c)=>c.rmsle_val<p.rmsle_val?c:p);
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td class="no"><span class="fam">'+(FAMRU[f]||f)+'</span></td>'+
+        '<td class="nm">'+b.model+'</td><td><b>'+nf(b.rmsle_val,4)+'</b></td><td>'+nf(b.rmsle_hon,4)+'</td>'+
+        '<td>'+by[f].length+'</td>';
+      fb.appendChild(tr);});
+})();
+})();
+</script>

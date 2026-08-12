@@ -1,0 +1,6 @@
+features,n_cells,rmsle_in_sample_oracle
+prev30_bucket,11,1.8965
+prev30_bucket x recency,55,1.8678
+prev30_bucket x recency x buydays90,334,1.7332
+prev30_bucket x recency x buydays90 x visitdays30,1487,1.744
+prev30_bucket x recency x buydays90 x visitdays30 x ord30,4115,1.7746

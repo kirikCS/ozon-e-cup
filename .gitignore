@@ -1,0 +1,18 @@
+# competition data — not redistributed
+data/
+
+# environments and caches
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# intermediate leaderboard probes; the six components needed to rebuild the
+# final solution live in release/submission/components/
+submissions/
+
+# release/code duplicates models/ and eda/
+release/code/
+
+# build artefacts
+*.zip

@@ -1,0 +1,79 @@
+{"model": "const 0", "family": "baseline", "rmsle_val": 3.20364, "rmsle_hon": 3.52149, "secs": 0.0, "notes": ""}
+{"model": "const optimal (c=10.25)", "family": "baseline", "rmsle_val": 2.29523, "rmsle_hon": 2.34959, "secs": 0.0, "notes": "c fitted on train anchors"}
+{"model": "prev30 (naive AR = sample_submit)", "family": "baseline", "rmsle_val": 2.19506, "rmsle_hon": 2.2362, "secs": 0.1, "notes": ""}
+{"model": "prev60 / 2", "family": "baseline", "rmsle_val": 2.1114, "rmsle_hon": 2.12986, "secs": 0.0, "notes": ""}
+{"model": "prev90 / 3", "family": "baseline", "rmsle_val": 2.09355, "rmsle_hon": 2.10548, "secs": 0.0, "notes": ""}
+{"model": "prev180 / 6", "family": "baseline", "rmsle_val": 2.10156, "rmsle_hon": 2.06678, "secs": 0.0, "notes": ""}
+{"model": "prev365 / 12.17", "family": "baseline", "rmsle_val": 2.06386, "rmsle_hon": null, "secs": 0.0, "notes": "honest anchor has <365d of history, not evaluable | honest anchor has <365d of history, not evaluable"}
+{"model": "lifetime rate per 30d", "family": "baseline", "rmsle_val": 2.06072, "rmsle_hon": 2.04859, "secs": 0.0, "notes": ""}
+{"model": "mean(prev30, prev60/2, prev90/3)", "family": "baseline", "rmsle_val": 2.08235, "rmsle_hon": 2.08404, "secs": 0.0, "notes": ""}
+{"model": "alpha*prev30 (alpha=0.43)", "family": "baseline", "rmsle_val": 2.04246, "rmsle_hon": 2.13799, "secs": 0.0, "notes": "alpha fitted on train"}
+{"model": "alpha*prev90/3 (alpha=0.40)", "family": "baseline", "rmsle_val": 1.8517, "rmsle_hon": 1.928, "secs": 0.0, "notes": "alpha fitted on train"}
+{"model": "expm1(0.57*log1p(prev30)+1.10)", "family": "baseline", "rmsle_val": 1.91832, "rmsle_hon": 1.96315, "secs": 0.0, "notes": "b,c fitted on train"}
+{"model": "expm1(0.68*log1p(prev90/3)+0.55)", "family": "baseline", "rmsle_val": 1.85232, "rmsle_hon": 1.90891, "secs": 0.0, "notes": "b,c fitted on train"}
+{"model": "EWMA of 30d blocks (lambda=0.50)", "family": "baseline", "rmsle_val": 2.0754, "rmsle_hon": 2.05655, "secs": 0.1, "notes": "lambda fitted on train"}
+{"model": "median of last 6 blocks", "family": "baseline", "rmsle_val": 1.93881, "rmsle_hon": 2.01218, "secs": 0.1, "notes": ""}
+{"model": "geometric mean of last 6 blocks", "family": "baseline", "rmsle_val": 1.77319, "rmsle_hon": 1.85323, "secs": 0.1, "notes": ""}
+{"model": "seasonal naive (same window a year ago)", "family": "baseline", "rmsle_val": 2.513, "rmsle_hon": 2.30197, "secs": 0.0, "notes": ""}
+{"model": "0.5*prev30 + 0.5*seasonal naive", "family": "baseline", "rmsle_val": 2.08857, "rmsle_hon": 2.11801, "secs": 0.0, "notes": ""}
+{"model": "Croston classic (alpha=0.15)", "family": "intermittent", "rmsle_val": 2.14959, "rmsle_hon": 2.14369, "secs": 0.1, "notes": "alpha fitted on train"}
+{"model": "Croston SBA (alpha=0.3)", "family": "intermittent", "rmsle_val": 2.12146, "rmsle_hon": 2.10894, "secs": 0.0, "notes": "alpha fitted on train"}
+{"model": "TSB (alpha=0.3, beta=0.02)", "family": "intermittent", "rmsle_val": 2.07976, "rmsle_hon": 2.06037, "secs": 0.1, "notes": "fitted on train"}
+{"model": "ADIDA (alpha=0.1, agg=30)", "family": "intermittent", "rmsle_val": 2.04841, "rmsle_hon": 2.04084, "secs": 0.2, "notes": "alpha fitted on train"}
+{"model": "IMAPA (levels [7, 14, 30, 60], alpha=0.1)", "family": "intermittent", "rmsle_val": 2.05902, "rmsle_hon": 2.04058, "secs": 0.5, "notes": "alpha fitted on train"}
+{"model": "TSB + log-calibration", "family": "intermittent", "rmsle_val": 1.84053, "rmsle_hon": 1.88349, "secs": 0.0, "notes": "b=0.73, c=0.30 fitted on train"}
+{"model": "Croston SBA + log-calibration", "family": "intermittent", "rmsle_val": 1.87643, "rmsle_hon": 1.92557, "secs": 0.0, "notes": "b=0.73, c=0.25 fitted on train"}
+{"model": "BG/NBD expected transactions (raw count)", "family": "btyd", "rmsle_val": 2.5162, "rmsle_hon": 2.78289, "secs": 3.0, "notes": "no monetary component"}
+{"model": "BG/NBD x empirical mean spend", "family": "btyd", "rmsle_val": 2.10577, "rmsle_hon": 2.04006, "secs": 0.1, "notes": ""}
+{"model": "MBG/NBD x empirical mean spend", "family": "btyd", "rmsle_val": 2.10753, "rmsle_hon": 2.03999, "secs": 17.0, "notes": ""}
+{"model": "Empirical-Bayes BetaBin x shrunk mean spend", "family": "btyd", "rmsle_val": 2.1661, "rmsle_hon": 2.14097, "secs": 0.2, "notes": ""}
+{"model": "BG/NBD x Gamma-Gamma [fixed]", "family": "btyd", "rmsle_val": 2.12928, "rmsle_hon": 2.05341, "secs": 0.1, "notes": "q constrained > 1"}
+{"model": "BG/NBD x Gamma-Gamma [fixed] + log-calibration", "family": "btyd", "rmsle_val": 1.82092, "rmsle_hon": 1.8515, "secs": null, "notes": " | calib b=0.90 c=-0.50"}
+{"model": "EB shrunk mean of log1p 30d blocks (K=10, kappa=0.5, decay=0.7)", "family": "btyd", "rmsle_val": 1.71479, "rmsle_hon": 1.80487, "secs": 0.2, "notes": "estimates E[log1p(y)] directly; params fitted on train"}
+{"model": "EB log-blocks + log-calibration", "family": "btyd", "rmsle_val": 1.74384, "rmsle_hon": 1.79083, "secs": null, "notes": " | calib b=0.97 c=0.35"}
+{"model": "EB log-blocks of 14d rescaled to 30d + calibration", "family": "btyd", "rmsle_val": 1.75516, "rmsle_hon": 1.8182, "secs": null, "notes": " | calib b=0.97 c=0.80"}
+{"model": "EB log-blocks of 60d rescaled to 30d + calibration", "family": "btyd", "rmsle_val": 1.79439, "rmsle_hon": 1.84419, "secs": null, "notes": " | calib b=0.90 c=0.35"}
+{"model": "EB log-blocks of 90d rescaled to 30d + calibration", "family": "btyd", "rmsle_val": 1.8075, "rmsle_hon": 1.85846, "secs": null, "notes": " | calib b=0.93 c=0.10"}
+{"model": "MLP L2 on log1p", "family": "neural", "rmsle_val": 1.7917, "rmsle_hon": 2.10348, "secs": 132.3, "notes": ""}
+{"model": "MLP L2 on log1p (3 seeds averaged)", "family": "neural", "rmsle_val": 1.77233, "rmsle_hon": 2.15573, "secs": 391.1, "notes": ""}
+{"model": "MLP wide 1024-512-256 L2 on log1p", "family": "neural", "rmsle_val": 1.75682, "rmsle_hon": 3.48246, "secs": 171.8, "notes": ""}
+{"model": "MLP + ZILN loss (Google)", "family": "neural", "rmsle_val": 2.01797, "rmsle_hon": 2.00389, "secs": 155.1, "notes": "zero-inflated lognormal NLL; prediction mapped to E[log1p]"}
+{"model": "Two-head MLP: P(buy) x E[log1p | buy]", "family": "neural", "rmsle_val": 1.82247, "rmsle_hon": 2.18414, "secs": 154.0, "notes": "exact RMSLE identity"}
+{"model": "Two-head MLP (3 seeds averaged)", "family": "neural", "rmsle_val": 1.83122, "rmsle_hon": 2.05858, "secs": 462.3, "notes": ""}
+{"model": "MMoE (6 experts, 2 tasks)", "family": "neural", "rmsle_val": 1.81833, "rmsle_hon": 2.39379, "secs": 183.8, "notes": "shared experts + per-task gates"}
+{"model": "MDME-style multi-expert (8 buckets)", "family": "neural", "rmsle_val": 1.77457, "rmsle_hon": 1.82847, "secs": 166.7, "notes": "divide-and-conquer over ordered target buckets, Kuaishou CIKM'22"}
+{"model": "LightGBM L2 on log1p", "family": "gbdt", "rmsle_val": 1.69101, "rmsle_hon": 1.7515, "secs": 201.8, "notes": "direct RMSLE optimisation"}
+{"model": "LightGBM L2 on log1p + BTYD feats", "family": "gbdt", "rmsle_val": 1.6888, "rmsle_hon": 1.75085, "secs": 54.0, "notes": ""}
+{"model": "LightGBM Tweedie (raw)", "family": "gbdt", "rmsle_val": 2.44014, "rmsle_hon": 2.37151, "secs": 62.6, "notes": ""}
+{"model": "LightGBM Tweedie + log-calibration", "family": "gbdt", "rmsle_val": 1.86927, "rmsle_hon": 1.92412, "secs": 56.3, "notes": " | calib b=0.75 c=-0.40"}
+{"model": "LightGBM Poisson (raw)", "family": "gbdt", "rmsle_val": 2.47858, "rmsle_hon": 2.41003, "secs": 68.7, "notes": ""}
+{"model": "LightGBM Poisson + log-calibration", "family": "gbdt", "rmsle_val": 1.88443, "rmsle_hon": 1.93711, "secs": 60.1, "notes": " | calib b=0.72 c=-0.40"}
+{"model": "LightGBM Huber on log1p", "family": "gbdt", "rmsle_val": 1.73455, "rmsle_hon": 1.7992, "secs": 65.6, "notes": ""}
+{"model": "LightGBM quantile 0.5 on log1p", "family": "gbdt", "rmsle_val": 1.78858, "rmsle_hon": 1.86649, "secs": 98.6, "notes": ""}
+{"model": "LightGBM MAE on log1p", "family": "gbdt", "rmsle_val": 1.78858, "rmsle_hon": 1.85979, "secs": 97.8, "notes": ""}
+{"model": "LightGBM L2 log1p, deep (255 leaves, 1200 trees)", "family": "gbdt", "rmsle_val": 1.69752, "rmsle_hon": 1.75783, "secs": 194.7, "notes": ""}
+{"model": "LightGBM DART on log1p", "family": "gbdt", "rmsle_val": 1.67638, "rmsle_hon": 1.75044, "secs": 76.3, "notes": ""}
+{"model": "Two-stage LGBM: P(buy) x E[log1p | buy]", "family": "two-stage", "rmsle_val": 1.68945, "rmsle_hon": 1.75071, "secs": 103.9, "notes": "exact identity E[log1p y] = P(y>0)*E[log1p y | y>0]"}
+{"model": "Two-stage LGBM + BTYD feats", "family": "two-stage", "rmsle_val": 1.68556, "rmsle_hon": 1.74959, "secs": 144.1, "notes": ""}
+{"model": "Dilated CNN over 182 daily steps", "family": "sequence", "rmsle_val": 1.7265, "rmsle_hon": 1.77588, "secs": 555.2, "notes": "daily tokens, two-head loss"}
+{"model": "GRU over 52 weekly steps", "family": "sequence", "rmsle_val": 1.73839, "rmsle_hon": 1.77615, "secs": 162.1, "notes": "weekly tokens, two-head loss"}
+{"model": "Two-stage LGBM + post calibration", "family": "two-stage", "rmsle_val": 1.68173, "rmsle_hon": 1.75146, "secs": 920.6, "notes": " | calib b=1.00 c=-0.05"}
+{"model": "XGBoost L2 on log1p", "family": "gbdt", "rmsle_val": 1.69286, "rmsle_hon": 1.75263, "secs": 85.2, "notes": ""}
+{"model": "XGBoost reg:squaredlogerror (raw)", "family": "gbdt", "rmsle_val": 1.69673, "rmsle_hon": 1.75991, "secs": 60.1, "notes": ""}
+{"model": "XGBoost Tweedie + log-calibration", "family": "gbdt", "rmsle_val": 1.87019, "rmsle_hon": 1.91712, "secs": 60.4, "notes": " | calib b=0.75 c=-0.40"}
+{"model": "CatBoost RMSE on log1p", "family": "gbdt", "rmsle_val": 1.69262, "rmsle_hon": 1.74848, "secs": 181.2, "notes": ""}
+{"model": "CatBoost Tweedie + log-calibration", "family": "gbdt", "rmsle_val": 1.88691, "rmsle_hon": 1.93863, "secs": 120.7, "notes": " | calib b=0.72 c=-0.40"}
+{"model": "CatBoost Quantile 0.5 on log1p", "family": "gbdt", "rmsle_val": 1.79679, "rmsle_hon": 1.86243, "secs": 300.3, "notes": ""}
+{"model": "PatchTST-style transformer (patch 14d)", "family": "sequence", "rmsle_val": 1.75902, "rmsle_hon": 1.78849, "secs": 1104.4, "notes": "daily tokens, two-head loss"}
+{"model": "Ridge on log-features -> log1p target (alpha=100)", "family": "linear", "rmsle_val": 2.0712, "rmsle_hon": 1.79795, "secs": 22.1, "notes": "alpha=100.0, near-constant columns dropped, standardised on train"}
+{"model": "Ridge on log-features -> log1p target (alpha=1000)", "family": "linear", "rmsle_val": 2.0519, "rmsle_hon": 1.75687, "secs": 22.1, "notes": "alpha=1000.0, near-constant columns dropped, standardised on train"}
+{"model": "Dilated CNN 182d + tabular features (hybrid)", "family": "sequence", "rmsle_val": 1.70843, "rmsle_hon": 1.7896, "secs": 566.7, "notes": "daily tokens, two-head loss, + tabular"}
+{"model": "PatchTST-style + tabular features (hybrid)", "family": "sequence", "rmsle_val": 1.72521, "rmsle_hon": 1.79319, "secs": 194.9, "notes": "daily tokens, two-head loss, + tabular"}
+{"model": "GRU weekly + tabular features (hybrid)", "family": "sequence", "rmsle_val": 1.7166, "rmsle_hon": 1.7824, "secs": 169.9, "notes": "weekly tokens, two-head loss, + tabular"}
+{"model": "Blend: mean of top-3 in log space", "family": "ensemble", "rmsle_val": 1.67546, "rmsle_hon": null, "secs": null, "notes": " | fitted on 50% of users, scored on the other 50%"}
+{"model": "Blend: mean of top-5 in log space", "family": "ensemble", "rmsle_val": 1.67809, "rmsle_hon": null, "secs": null, "notes": " | fitted on 50% of users, scored on the other 50%"}
+{"model": "Blend: mean of top-8 in log space", "family": "ensemble", "rmsle_val": 1.68108, "rmsle_hon": null, "secs": null, "notes": " | fitted on 50% of users, scored on the other 50%"}
+{"model": "Blend: NNLS weights on log1p (top-8)", "family": "ensemble", "rmsle_val": 1.67041, "rmsle_hon": null, "secs": null, "notes": "w=0.04,0.26,0.30,0.07,0.06,0.04,0.16,0.00 | fitted on 50% of users, scored on the other 50%"}
+{"model": "Blend: NNLS + intercept (top-8)", "family": "ensemble", "rmsle_val": 1.67041, "rmsle_hon": null, "secs": null, "notes": " | fitted on 50% of users, scored on the other 50%"}
+{"model": "Isotonic calibration of best single (LightGBM DART on log1p)", "family": "ensemble", "rmsle_val": 1.67024, "rmsle_hon": null, "secs": null, "notes": " | fitted on 50% of users, scored on the other 50%"}
+{"model": "Isotonic calibration of the NNLS blend", "family": "ensemble", "rmsle_val": 1.6675, "rmsle_hon": null, "secs": null, "notes": " | fitted on 50% of users, scored on the other 50%"}
