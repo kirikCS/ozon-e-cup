@@ -1,0 +1,15 @@
+--- Tier 2b: fixes ---
+  2026-01-14: BG/NBD r=0.5390 alpha=11.796 a=9.4164 b=29321.4019 | E[X(30)] mean=1.368 zeros=0.000
+  2026-01-14: Gamma-Gamma p=0.9594 q=3.1321 g=120.995
+  2025-10-16: BG/NBD r=0.4377 alpha=10.708 a=8.3600 b=19086.5546 | E[X(30)] mean=1.225 zeros=0.000
+  2025-10-16: Gamma-Gamma p=1.0807 q=3.0267 g=104.138
+  BG/NBD x Gamma-Gamma [fixed]                         RMSLE 2.12928 | honest 2.05341  (0.1s)
+  BG/NBD x Gamma-Gamma [fixed] + log-calibration       RMSLE 1.82092 | honest 1.8515  (Nones)
+  EB log-blocks tuned: K=10 kappa=0.5 decay=0.7
+  EB shrunk mean of log1p 30d blocks (K=10, kappa=0.5, decay=0.7) RMSLE 1.71479 | honest 1.80487  (0.2s)
+  EB log-blocks + log-calibration                      RMSLE 1.74384 | honest 1.79083  (Nones)
+  EB log-blocks of 14d rescaled to 30d + calibration   RMSLE 1.75516 | honest 1.8182  (Nones)
+  EB log-blocks of 60d rescaled to 30d + calibration   RMSLE 1.79439 | honest 1.84419  (Nones)
+  EB log-blocks of 90d rescaled to 30d + calibration   RMSLE 1.80750 | honest 1.85846  (Nones)
+  BTYD features saved for 20 anchors, 5 columns
+Tier 2b done

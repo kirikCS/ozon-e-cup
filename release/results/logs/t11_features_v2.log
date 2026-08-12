@@ -1,0 +1,49 @@
+building v1 features ...
+features: 165 cols, anchors [160, 174, 202, 230, 236, 258, 264, 288, 292, 320, 348, 378], per-anchor 165 MB
+  BTYD available for all anchors: True
+building v2 features ...
+  v2: Croston/TSB rates over the full timeline ...
+  v2: 126 features, 126 MB per anchor
+v1 = 170, v2 = 126, total = 296
+
+--- Tier 11: v1 vs v2 vs v1+v2 ---
+  LightGBM L2 on log1p [v1]                            RMSLE 1.68906 | honest 1.75011  (53.1s)
+  Two-stage LGBM [v1]                                  RMSLE 1.68565 | honest 1.74866  (96.2s)
+  CatBoost RMSE on log1p [v1]                          RMSLE 1.68949 | honest 1.7473  (163.3s)
+  LightGBM DART [v1]                                   RMSLE 1.67502 | honest 1.75011  (70.3s)
+  LightGBM L2 on log1p [both]                          RMSLE 1.68792 | honest 1.74922  (70.2s)
+  Two-stage LGBM [both]                                RMSLE 1.68640 | honest 1.74801  (125.4s)
+  CatBoost RMSE on log1p [both]                        RMSLE 1.68819 | honest 1.74651  (172.7s)
+  LightGBM DART [both]                                 RMSLE 1.67419 | honest 1.75013  (110.2s)
+  LightGBM L2 on log1p [v2]                            RMSLE 1.69463 | honest 1.75292  (42.8s)
+  LightGBM L2 on log1p (importance run) [both]         RMSLE 1.68792 | honest 1.74922  (71.2s)
+
+топ-25 признаков по gain (v2 отмечены *):
+    eb_logblk                         51.58%
+    btyd_ex                           10.05%
+    buyday_180                         7.33%
+    ord_180                            7.08%
+  * rec_over_gapmax                    4.77%
+    ord_90                             1.33%
+  * tsb_rate                           1.01%
+    eb_p                               0.90%
+    ord_365                            0.64%
+    srch_14                            0.51%
+    visit_7                            0.46%
+    visit_14                           0.40%
+    buyday_90                          0.38%
+    rec_visit                          0.33%
+    ord_60                             0.31%
+    srch_7                             0.31%
+    rec_cart                           0.30%
+    gmv_365                            0.30%
+    gmv_blk_logmean                    0.23%
+    gmv_all_per_day                    0.22%
+    srch_30                            0.21%
+    visit_30                           0.19%
+  * gmv_per_month                      0.19%
+    buyday_60                          0.19%
+  * buys_per_month                     0.17%
+
+суммарная доля gain у v2-признаков: 11.4% (их 126 из 296)
+done

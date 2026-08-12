@@ -16,3 +16,5 @@ release/code/
 
 # build artefacts
 *.zip
+
+backup/

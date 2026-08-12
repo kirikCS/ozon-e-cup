@@ -1,0 +1,13 @@
+device: cuda | anchors [264, 292, 294, 320, 322, 348, 350, 378, 408]
+SEQ (250000, 7, 409) 1.43 GB
+features: 165 cols, anchors [264, 292, 294, 320, 322, 348, 350, 378, 408], per-anchor 165 MB
+    seed 0 done
+    seed 1 done
+    seed 2 done
+probe RMSLE at 2026-01-14: 1.70818  (850s)
+    seed 0 done
+    seed 1 done
+    seed 2 done
+final done (848s)
+seq_hybrid.csv: mean log1p=2.3288 mean=35.81 p50=7.85 p99=393 max=7208
+done

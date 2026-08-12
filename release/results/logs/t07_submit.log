@@ -1,0 +1,35 @@
+predict anchor 2026-02-13 -> [2026-02-14, 2026-03-15]
+blend/isotonic fitted at anchor 2026-01-14 -> [2026-01-15, 2026-02-13]
+computing BTYD features for [266, 294, 322, 350, 408]
+  2025-09-24 done
+  2025-10-22 done
+  2025-11-19 done
+  2025-12-17 done
+  2026-02-13 done
+building features ...
+features: 165 cols, anchors [236, 264, 266, 292, 294, 320, 322, 348, 350, 378, 408], per-anchor 165 MB
+  170 features, 40s
+final train (1250000, 170), probe train (1250000, 170)
+  LightGBM DART on log1p                       probe RMSLE 1.67501  (79s)
+  Two-stage LGBM + BTYD feats                  probe RMSLE 1.68556  (110s)
+  LightGBM L2 on log1p + BTYD feats            probe RMSLE 1.68906  (61s)
+  LightGBM L2 log1p deep                       probe RMSLE 1.69543  (196s)
+  CatBoost RMSE on log1p                       probe RMSLE 1.68949  (170s)
+  XGBoost L2 on log1p                          probe RMSLE 1.69018  (73s)
+
+writing submissions:
+  1. LightGBM DART on log1p                      -> sub1_lgbm_dart.csv  mean=26.77 zeros=0.0% p50=5.8 p99=306 max=1092
+  2. Two-stage LGBM + BTYD                       -> sub2_two_stage_btyd.csv  mean=35.09 zeros=0.0% p50=6.1 p99=427 max=3738
+
+blend weights (fitted at anchor 2026-01-14):
+     0.259  LightGBM DART on log1p
+     0.343  Two-stage LGBM + BTYD feats
+     0.037  LightGBM L2 on log1p + BTYD feats
+     0.000  LightGBM L2 log1p deep
+     0.224  CatBoost RMSE on log1p
+     0.083  XGBoost L2 on log1p
+  blend probe RMSLE          1.67227
+  blend + isotonic probe     1.66792
+  3. Isotonic calibration of NNLS blend          -> sub3_nnls_isotonic_blend.csv  mean=28.12 zeros=0.5% p50=4.3 p99=363 max=3120
+
+done

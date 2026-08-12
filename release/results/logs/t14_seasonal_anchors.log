@@ -1,0 +1,20 @@
+features: 165 cols, anchors [43, 57, 71, 236, 264, 266, 292, 294, 320, 322, 348, 350, 378, 408], per-anchor 165 MB
+BTYD missing for [43, 57, 71]
+features 165
+  anchor 2025-02-13: target 2025-02-14..2025-03-15, history 44 days, target mean log1p 1.7154
+  anchor 2025-02-27: target 2025-02-28..2025-03-29, history 58 days, target mean log1p 1.7178
+  anchor 2025-03-13: target 2025-03-14..2025-04-12, history 72 days, target mean log1p 1.6885
+  anchor 2026-01-14: target mean log1p 2.2421  (trough)
+
+baseline (no seasonal anchors): probe RMSLE 1.69262  (90s)
+
+seasonal, weight 1.0: probe RMSLE 1.71058  (134s)
+  -> seasonal_cat_w1.csv  mean=36.94 p50=7.19 p99=446 max=3226
+
+seasonal, weight 2.0: probe RMSLE 1.71685  (142s)
+  -> seasonal_cat_w2.csv  mean=32.92 p50=7.23 p99=351 max=3062
+
+seasonal, weight 0.5: probe RMSLE 1.72145  (139s)
+  -> seasonal_cat_w05.csv  mean=36.81 p50=7.15 p99=432 max=3032
+
+done

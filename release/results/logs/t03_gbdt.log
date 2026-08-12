@@ -1,0 +1,31 @@
+building features ...
+features: 165 cols, anchors [146, 174, 202, 230, 236, 258, 264, 288, 292, 320, 348, 378], per-anchor 165 MB
+  165 features, 39s
+  BTYD features available for 20 anchors
+--- Tier 3: gradient boosting ---
+  LightGBM L2 on log1p                                 RMSLE 1.69101 | honest 1.7515  (201.8s)
+  LightGBM L2 on log1p + BTYD feats                    RMSLE 1.68880 | honest 1.75085  (54.0s)
+  LightGBM Tweedie (raw)                               RMSLE 2.44014 | honest 2.37151  (62.6s)
+  LightGBM Tweedie + log-calibration                   RMSLE 1.86927 | honest 1.92412  (56.3s)
+  LightGBM Poisson (raw)                               RMSLE 2.47858 | honest 2.41003  (68.7s)
+  LightGBM Poisson + log-calibration                   RMSLE 1.88443 | honest 1.93711  (60.1s)
+  LightGBM Huber on log1p                              RMSLE 1.73455 | honest 1.7992  (65.6s)
+  LightGBM quantile 0.5 on log1p                       RMSLE 1.78858 | honest 1.86649  (98.6s)
+  LightGBM MAE on log1p                                RMSLE 1.78858 | honest 1.85979  (97.8s)
+  LightGBM L2 log1p, deep (255 leaves, 1200 trees)     RMSLE 1.69752 | honest 1.75783  (194.7s)
+  LightGBM DART on log1p                               RMSLE 1.67638 | honest 1.75044  (76.3s)
+  Two-stage LGBM: P(buy) x E[log1p | buy]              RMSLE 1.68945 | honest 1.75071  (103.9s)
+  Two-stage LGBM + BTYD feats                          RMSLE 1.68556 | honest 1.74959  (144.1s)
+  Two-stage LGBM + post calibration                    RMSLE 1.68173 | honest 1.75146  (920.6s)
+  XGBoost L2 on log1p                                  RMSLE 1.69286 | honest 1.75263  (85.2s)
+  XGBoost reg:squaredlogerror (raw)                    RMSLE 1.69673 | honest 1.75991  (60.1s)
+  XGBoost Tweedie + log-calibration                    RMSLE 1.87019 | honest 1.91712  (60.4s)
+  CatBoost RMSE on log1p                               RMSLE 1.69262 | honest 1.74848  (181.2s)
+  CatBoost Tweedie + log-calibration                   RMSLE 1.88691 | honest 1.93863  (120.7s)
+  CatBoost Quantile 0.5 on log1p                       RMSLE 1.79679 | honest 1.86243  (300.3s)
+/root/ecup/.venv/lib/python3.12/site-packages/sklearn/linear_model/_ridge.py:227: LinAlgWarning: An ill-conditioned matrix detected: slice 0 has rcond = 5.835725858105434e-08.
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+/root/ecup/.venv/lib/python3.12/site-packages/sklearn/linear_model/_ridge.py:227: LinAlgWarning: An ill-conditioned matrix detected: slice 0 has rcond = 6.068265889780378e-08.
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  Ridge on log-features -> log1p target                RMSLE 2.84209 | honest 27.44651  (11.9s)
+Tier 3 done

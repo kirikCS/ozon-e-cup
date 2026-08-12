@@ -1,0 +1,13 @@
+/root/ecup/.venv/lib/python3.12/site-packages/torch/cuda/__init__.py:180: UserWarning: CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment, e.g. changing env variable CUDA_VISIBLE_DEVICES after program start. Setting the available devices to be zero. (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  return torch._C._cuda_getDeviceCount() > 0
+features: 165 cols, anchors [264, 292, 294, 320, 322, 348, 350, 378, 408], per-anchor 165 MB
+  v2: Croston/TSB rates over the full timeline ...
+  v2: 126 features, 126 MB per anchor
+zoo: 296 features, anchors [264, 292, 294, 320, 322, 348, 350, 378, 408]
+attention models use top-96 features by gain
+
+=== зоопарк табличных архитектур: 9 моделей ===
+
+FT-Transformer
+/root/ecup/models/t17_tabnn_zoo.py:46: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.tr = nn.TransformerEncoder(el, nl)

@@ -1,0 +1,13 @@
+device: cuda NVIDIA GeForce RTX 5060 Ti
+features: 165 cols, anchors [160, 174, 188, 202, 216, 230, 244, 250, 258, 264, 278, 288, 292, 306, 320, 334, 348, 378], per-anchor 165 MB
+feature dim 170
+--- Tier 4: neural networks ---
+  MLP L2 on log1p                                      RMSLE 1.79170 | honest 2.10348  (132.3s)
+  MLP L2 on log1p (3 seeds averaged)                   RMSLE 1.77233 | honest 2.15573  (391.1s)
+  MLP wide 1024-512-256 L2 on log1p                    RMSLE 1.75682 | honest 3.48246  (171.8s)
+  MLP + ZILN loss (Google)                             RMSLE 2.01797 | honest 2.00389  (155.1s)
+  Two-head MLP: P(buy) x E[log1p | buy]                RMSLE 1.82247 | honest 2.18414  (154.0s)
+  Two-head MLP (3 seeds averaged)                      RMSLE 1.83122 | honest 2.05858  (462.3s)
+  MMoE (6 experts, 2 tasks)                            RMSLE 1.81833 | honest 2.39379  (183.8s)
+  MDME-style multi-expert (8 buckets)                  RMSLE 1.77457 | honest 1.82847  (166.7s)
+Tier 4 done
