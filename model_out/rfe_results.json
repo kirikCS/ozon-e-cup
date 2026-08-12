@@ -1,0 +1,438 @@
+{
+ "LightGBM DART": [
+  {
+   "n": 296,
+   "val": 1.6741909101931096,
+   "hon": 1.750114435956032,
+   "kept": null
+  },
+  {
+   "n": 222,
+   "val": 1.6742125581164897,
+   "hon": 1.7500837842309485,
+   "kept": null
+  },
+  {
+   "n": 163,
+   "val": 1.6741272514767764,
+   "hon": 1.749930223880202,
+   "kept": null
+  },
+  {
+   "n": 118,
+   "val": 1.673878525544732,
+   "hon": 1.7499125698185398,
+   "kept": null
+  },
+  {
+   "n": 83,
+   "val": 1.6737279846905053,
+   "hon": 1.750026106471535,
+   "kept": null
+  },
+  {
+   "n": 59,
+   "val": 1.6744782585919562,
+   "hon": 1.75100856194178,
+   "kept": null
+  },
+  {
+   "n": 41,
+   "val": 1.675176673738509,
+   "hon": 1.7514517162255567,
+   "kept": null
+  },
+  {
+   "n": 30,
+   "val": 1.677750492953401,
+   "hon": 1.7526637935033518,
+   "kept": [
+    "eb_logblk",
+    "ord_180",
+    "btyd_ex",
+    "buyday_180",
+    "tsb_rate",
+    "buys_per_month",
+    "ord_365",
+    "ord_90",
+    "rank_buydays",
+    "rec_over_gapmax",
+    "eb_p",
+    "srch_7",
+    "ord_all",
+    "ord_60",
+    "srch_14",
+    "gmv_per_month",
+    "ord_30",
+    "buyday_30",
+    "rank_prev365",
+    "rec_cart",
+    "cart_14",
+    "rank_prev30",
+    "gmv_blk_logmean",
+    "rec_visit",
+    "visit_7",
+    "gmv_all_per_day",
+    "visit_30_over_90n",
+    "visit_14",
+    "rec_buy",
+    "slope_gmv_26w"
+   ]
+  },
+  {
+   "n": 21,
+   "val": 1.678663661215782,
+   "hon": 1.7535084105183742,
+   "kept": [
+    "eb_logblk",
+    "ord_180",
+    "btyd_ex",
+    "buyday_180",
+    "buys_per_month",
+    "tsb_rate",
+    "ord_90",
+    "ord_365",
+    "rec_over_gapmax",
+    "eb_p",
+    "srch_7",
+    "srch_14",
+    "ord_all",
+    "ord_60",
+    "gmv_blk_logmean",
+    "gmv_per_month",
+    "ord_30",
+    "rank_buydays",
+    "rec_cart",
+    "visit_30_over_90n",
+    "buyday_30"
+   ]
+  }
+ ],
+ "CatBoost RMSE": [
+  {
+   "n": 296,
+   "val": 1.6881858211540564,
+   "hon": 1.7465099283623344,
+   "kept": null
+  },
+  {
+   "n": 222,
+   "val": 1.6856513506366244,
+   "hon": 1.7467832712406033,
+   "kept": null
+  },
+  {
+   "n": 163,
+   "val": 1.6842822582976575,
+   "hon": 1.7461578417669725,
+   "kept": null
+  },
+  {
+   "n": 118,
+   "val": 1.6863585179504932,
+   "hon": 1.7465634547341347,
+   "kept": null
+  },
+  {
+   "n": 83,
+   "val": 1.6825732327882346,
+   "hon": 1.7461492833384311,
+   "kept": null
+  },
+  {
+   "n": 59,
+   "val": 1.6834908736371488,
+   "hon": 1.7466877218447474,
+   "kept": null
+  },
+  {
+   "n": 41,
+   "val": 1.680269624658204,
+   "hon": 1.748621685292011,
+   "kept": null
+  },
+  {
+   "n": 30,
+   "val": 1.6814410765560035,
+   "hon": 1.7501156552050667,
+   "kept": [
+    "eb_logblk",
+    "bgap_std",
+    "btyd_ex",
+    "srch_7",
+    "ord_blk1",
+    "gmv_blk_logstd",
+    "tsb_rate",
+    "rank_prev365",
+    "gmv_365",
+    "gmv_per_month",
+    "buys_per_month",
+    "rec_cart",
+    "dow_gmv_90_top",
+    "ord_365",
+    "gmv_per_visit_all",
+    "conv_buyday_per_visit_365",
+    "gmv_14",
+    "visit_30_over_90n",
+    "srch_14",
+    "eb_p",
+    "ord_30",
+    "slope_vis_26w",
+    "visit_7",
+    "basket_365",
+    "rec_visit",
+    "aov_all",
+    "ord_all",
+    "ord_180",
+    "srch_blk1",
+    "tgt_doy_sin"
+   ]
+  },
+  {
+   "n": 21,
+   "val": 1.6846862408795436,
+   "hon": 1.7498012297637664,
+   "kept": [
+    "eb_logblk",
+    "bgap_std",
+    "tsb_rate",
+    "btyd_ex",
+    "gmv_blk_logstd",
+    "gmv_365",
+    "ord_all",
+    "buys_per_month",
+    "ord_30",
+    "ord_180",
+    "ord_blk1",
+    "srch_7",
+    "rec_cart",
+    "srch_14",
+    "conv_buyday_per_visit_365",
+    "visit_30_over_90n",
+    "gmv_14",
+    "visit_7",
+    "rank_prev365",
+    "basket_365",
+    "slope_vis_26w"
+   ]
+  }
+ ],
+ "Two-stage LGBM": [
+  {
+   "n": 296,
+   "val": 1.6864036369486828,
+   "hon": 1.7480559107539895,
+   "kept": null
+  },
+  {
+   "n": 222,
+   "val": 1.6846480931129155,
+   "hon": 1.7478816154642443,
+   "kept": null
+  },
+  {
+   "n": 163,
+   "val": 1.6865802816533848,
+   "hon": 1.7484209790290959,
+   "kept": null
+  },
+  {
+   "n": 118,
+   "val": 1.6855937821895668,
+   "hon": 1.7476676578399881,
+   "kept": null
+  },
+  {
+   "n": 83,
+   "val": 1.6847182648607675,
+   "hon": 1.7470816436969578,
+   "kept": null
+  },
+  {
+   "n": 59,
+   "val": 1.6848109099070099,
+   "hon": 1.747398079121089,
+   "kept": null
+  },
+  {
+   "n": 41,
+   "val": 1.6817167593908269,
+   "hon": 1.747699322372082,
+   "kept": null
+  },
+  {
+   "n": 30,
+   "val": 1.685107533112145,
+   "hon": 1.7497373265795213,
+   "kept": [
+    "eb_logblk",
+    "gmv_per_month",
+    "buyday_180",
+    "gmv_all_per_day",
+    "buyday_90",
+    "rec_over_gapmax",
+    "btyd_ex",
+    "tsb_rate",
+    "wk_gmv_nonzero_26",
+    "eb_p",
+    "ord_60",
+    "gmv_per_visit_all",
+    "ord_90",
+    "gmv_180",
+    "ord_blk1",
+    "wk_gmv_logstd_26",
+    "srch_7",
+    "srch_14",
+    "rank_prev30",
+    "btyd_gg",
+    "rec_cart",
+    "visit_14",
+    "basket_365",
+    "dow_gmv_180_top",
+    "gmv_14",
+    "conv_buyday_per_visit_365",
+    "slope_vis_12w",
+    "buyday_60",
+    "gmv_search_all",
+    "slope_vis_26w"
+   ]
+  },
+  {
+   "n": 21,
+   "val": 1.6869636145525762,
+   "hon": 1.7508618536174476,
+   "kept": [
+    "eb_logblk",
+    "gmv_per_month",
+    "buyday_180",
+    "btyd_ex",
+    "gmv_all_per_day",
+    "wk_gmv_nonzero_26",
+    "rec_over_gapmax",
+    "tsb_rate",
+    "buyday_90",
+    "eb_p",
+    "ord_90",
+    "gmv_per_visit_all",
+    "wk_gmv_logstd_26",
+    "gmv_180",
+    "ord_60",
+    "ord_blk1",
+    "srch_7",
+    "visit_14",
+    "srch_14",
+    "rank_prev30",
+    "rec_cart"
+   ]
+  }
+ ],
+ "LightGBM L2": [
+  {
+   "n": 296,
+   "val": 1.6879234628762678,
+   "hon": 1.7492231642399574,
+   "kept": null
+  },
+  {
+   "n": 222,
+   "val": 1.6882018632471087,
+   "hon": 1.7491094373607128,
+   "kept": null
+  },
+  {
+   "n": 163,
+   "val": 1.686410373533679,
+   "hon": 1.7497935456639466,
+   "kept": null
+  },
+  {
+   "n": 118,
+   "val": 1.686077352594985,
+   "hon": 1.7495844623199654,
+   "kept": null
+  },
+  {
+   "n": 83,
+   "val": 1.6853937807745925,
+   "hon": 1.7489733743740432,
+   "kept": null
+  },
+  {
+   "n": 59,
+   "val": 1.6855048861823931,
+   "hon": 1.7491091576242532,
+   "kept": null
+  },
+  {
+   "n": 41,
+   "val": 1.6864546715475077,
+   "hon": 1.7496946950025813,
+   "kept": null
+  },
+  {
+   "n": 30,
+   "val": 1.68579089137981,
+   "hon": 1.7502512732524598,
+   "kept": [
+    "eb_logblk",
+    "btyd_ex",
+    "ord_180",
+    "buys_per_month",
+    "tsb_rate",
+    "ord_90",
+    "rec_over_gapmax",
+    "ord_all",
+    "srch_7",
+    "srch_14",
+    "ord_60",
+    "gmv_per_month",
+    "rank_prev365",
+    "rank_buydays",
+    "rec_cart",
+    "ord_30",
+    "visit_30_over_90n",
+    "visit_7",
+    "dow_gmv_90_entropy",
+    "wk_gmv_logstd_26",
+    "buyday_30",
+    "conv_buyday_per_visit_365",
+    "buyday_90",
+    "cart_14",
+    "eb_p",
+    "slope_vis_26w",
+    "slope_vis_12w",
+    "conv_drift_30_365",
+    "rec_visit",
+    "gmv_all_per_day"
+   ]
+  },
+  {
+   "n": 21,
+   "val": 1.6872692612640174,
+   "hon": 1.752333677769731,
+   "kept": [
+    "eb_logblk",
+    "buys_per_month",
+    "btyd_ex",
+    "ord_180",
+    "ord_all",
+    "buyday_90",
+    "tsb_rate",
+    "ord_90",
+    "rank_buydays",
+    "ord_60",
+    "rec_over_gapmax",
+    "srch_7",
+    "srch_14",
+    "gmv_per_month",
+    "gmv_all_per_day",
+    "ord_30",
+    "rec_cart",
+    "dow_gmv_90_entropy",
+    "rank_prev365",
+    "visit_30_over_90n",
+    "conv_buyday_per_visit_365"
+   ]
+  }
+ ]
+}

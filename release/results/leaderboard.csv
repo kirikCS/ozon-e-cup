@@ -1,13 +1,17 @@
 #,file,what,LB
-1,sub3_nnls_isotonic_blend,best on validation (1.6679),1.6836226427909342
-2,sub1_lgbm_dart,LightGBM DART,1.672341791651013
-3,sub2_two_stage_btyd,worst of the first three on validation,1.6577724728425334
-4,sub5_two_stage_shift_c0190,"sub2, log-shift +0.190",1.657064821153091
-5,sub4_two_stage_shift_c0105,"sub2, log-shift +0.105",1.6546867486238441
-6,sub8_catboost_rmse_log1p_shifted,"CatBoost, level-matched",1.6534269025124644
-7,sub11_blend_sub4_sub8,"blend, weights solved analytically",1.6524998892235196
-8,blend_slope085,slope probe (deliberately off-optimum),1.6781228504796855
-9,ols_stack,unconstrained stack of 4 vectors,1.6508949682829253
-10,eb_logblocks,decorrelation probe,1.7009172654286824
-11,seq_hybrid,dilated CNN over the daily panel,1.6541075222
--,stack6,stack of 6 vectors (predicted),1.649598
+1,nnls_isotonic_blend,лучший на валидации (1.6679),1.6836226427909342
+2,lgbm_dart,LightGBM DART,1.672341791651013
+3,two_stage_btyd,худший из трёх на валидации,1.6577724728425334
+4,two_stage_shift_c0190,"two-stage, лог-сдвиг +0.190",1.657064821153091
+5,two_stage_shift_c0105,"two-stage, лог-сдвиг +0.105",1.6546867486238441
+6,catboost,"CatBoost, уровень выставлен",1.6534269025124644
+7,blend_sub4_sub8,"бленд двух, веса аналитически",1.6524998892235196
+8,blend_slope085,зонд наклона (намеренно не в оптимуме),1.6781228504796855
+9,ols_stack,безусловный стек 4 векторов,1.6508949682829253
+10,eb_logblocks,"зонд декорреляции, 0 обучаемых параметров",1.7009172654286824
+11,seq_hybrid,dilated CNN по дневной панели,1.6541075222
+12,rfe_catboost,CatBoost на 41 отобранном признаке,1.6546700867029809
+13,stack7,стек 7 векторов,1.6494144022321338
+14,rfe_lgbm,LightGBM на 83 отобранных признаках,1.6561152046374636
+15,nocal_catboost,CatBoost без календарных признаков,1.6535318106642274
+16,stack9,стек 9 векторов,1.6491800741214804

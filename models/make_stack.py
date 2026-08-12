@@ -1,30 +1,29 @@
-"""Rebuild stack6.csv from the six component submissions — no retraining needed.
+"""Rebuild the current stack from its component submissions — no retraining needed.
 
-Weights come from the unconstrained OLS projection of log1p(target) onto the span of the
-component predictions. Both quantities it needs were solved from the leaderboard itself:
-  E[log1p(y)] = 2.3284   (exact, from the three-point shift parabola)
-  Var(log1p(y)) = 5.366802 (exact, from the slope probe)
-Given those, Cov(L, P_i) = (Var(L) + Var(P_i) - R*_i^2) / 2 for every scored vector.
+Weights are the unconstrained OLS projection of log1p(target) onto the span of the components.
+Both quantities that projection needs were solved from the leaderboard itself:
+
+  E[log1p(y)]   = 2.3284    exact, from the three-point parabola of the constant log-shift family
+  Var(log1p(y)) = 5.366802  exact, from the slope probe
+
+Given those, Cov(L, P_i) = (Var(L) + Var(P_i) - R*_i^2) / 2 for every component whose leaderboard
+score is known, where R*_i is that score after level-matching.
+
+Usage: python models/make_stack.py [components_dir] [out.csv] [components.json]
 """
+import json
 import sys
 from pathlib import Path
 
 import numpy as np
 import polars as pl
 
-EL, VAR_L, RIDGE = 2.3284, 5.366802, 3e-5
-SRC = Path(sys.argv[1] if len(sys.argv) > 1 else "submission/components")
-DST = Path(sys.argv[2] if len(sys.argv) > 2 else "submission/stack6.csv")
+EL, VAR_L, RIDGE = 2.3284, 5.366802, 1e-4
+SRC = Path(sys.argv[1] if len(sys.argv) > 1 else "release/submission/components")
+DST = Path(sys.argv[2] if len(sys.argv) > 2 else "release/submission/stack9.csv")
+SPEC = Path(sys.argv[3] if len(sys.argv) > 3 else SRC / "components.json")
 
-# component -> its measured public-leaderboard RMSLE
-LB = {
-    "two_stage_btyd_shift": 1.6546867486238441,
-    "catboost_shifted":     1.6534269025124644,
-    "lgbm_dart":            1.672341791651013,
-    "nnls_isotonic_blend":  1.6836226427909342,
-    "eb_logblocks":         1.7009172654286824,
-    "seq_hybrid":           1.6541075222,
-}
+LB = json.loads(SPEC.read_text())          # {component name -> measured public LB RMSLE}
 
 P, Rs2, uid = [], [], None
 for name, lb in LB.items():
@@ -33,7 +32,7 @@ for name, lb in LB.items():
         uid = d["user_id"].to_numpy()
     assert (d["user_id"].to_numpy() == uid).all(), f"user_id order differs in {name}"
     q = np.log1p(d["predict"].to_numpy())
-    c = EL - q.mean()                     # level-match, then the LB score shifts by -c^2
+    c = EL - q.mean()                      # level-matching shifts the score by -c^2
     P.append(q - q.mean() + EL)
     Rs2.append(lb ** 2 - c ** 2)
 

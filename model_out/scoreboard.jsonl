@@ -77,3 +77,17 @@
 {"model": "Blend: NNLS + intercept (top-8)", "family": "ensemble", "rmsle_val": 1.67041, "rmsle_hon": null, "secs": null, "notes": " | fitted on 50% of users, scored on the other 50%"}
 {"model": "Isotonic calibration of best single (LightGBM DART on log1p)", "family": "ensemble", "rmsle_val": 1.67024, "rmsle_hon": null, "secs": null, "notes": " | fitted on 50% of users, scored on the other 50%"}
 {"model": "Isotonic calibration of the NNLS blend", "family": "ensemble", "rmsle_val": 1.6675, "rmsle_hon": null, "secs": null, "notes": " | fitted on 50% of users, scored on the other 50%"}
+{"model": "LightGBM L2 on log1p [v1]", "family": "featset-v1", "rmsle_val": 1.68906, "rmsle_hon": 1.75011, "secs": 53.1, "notes": "170 features"}
+{"model": "Two-stage LGBM [v1]", "family": "featset-v1", "rmsle_val": 1.68565, "rmsle_hon": 1.74866, "secs": 96.2, "notes": "170 features"}
+{"model": "CatBoost RMSE on log1p [v1]", "family": "featset-v1", "rmsle_val": 1.68949, "rmsle_hon": 1.7473, "secs": 163.3, "notes": "170 features"}
+{"model": "LightGBM DART [v1]", "family": "featset-v1", "rmsle_val": 1.67502, "rmsle_hon": 1.75011, "secs": 70.3, "notes": "170 features"}
+{"model": "LightGBM L2 on log1p [both]", "family": "featset-both", "rmsle_val": 1.68792, "rmsle_hon": 1.74922, "secs": 70.2, "notes": "296 features"}
+{"model": "Two-stage LGBM [both]", "family": "featset-both", "rmsle_val": 1.6864, "rmsle_hon": 1.74801, "secs": 125.4, "notes": "296 features"}
+{"model": "CatBoost RMSE on log1p [both]", "family": "featset-both", "rmsle_val": 1.68819, "rmsle_hon": 1.74651, "secs": 172.7, "notes": "296 features"}
+{"model": "LightGBM DART [both]", "family": "featset-both", "rmsle_val": 1.67419, "rmsle_hon": 1.75013, "secs": 110.2, "notes": "296 features"}
+{"model": "LightGBM L2 on log1p [v2]", "family": "featset-v2", "rmsle_val": 1.69463, "rmsle_hon": 1.75292, "secs": 42.8, "notes": "126 features"}
+{"model": "LightGBM L2 on log1p (importance run) [both]", "family": "featset-both", "rmsle_val": 1.68792, "rmsle_hon": 1.74922, "secs": 71.2, "notes": "296 features"}
+{"model": "LightGBM DART RFE-83", "family": "rfe", "rmsle_val": 1.67373, "rmsle_hon": 1.75003, "secs": null, "notes": "из 296 признаков; полный набор давал 1.67419"}
+{"model": "CatBoost RMSE RFE-41", "family": "rfe", "rmsle_val": 1.68027, "rmsle_hon": 1.74862, "secs": null, "notes": "из 296 признаков; полный набор давал 1.68819"}
+{"model": "Two-stage LGBM RFE-41", "family": "rfe", "rmsle_val": 1.68172, "rmsle_hon": 1.7477, "secs": null, "notes": "из 296 признаков; полный набор давал 1.68640"}
+{"model": "LightGBM L2 RFE-83", "family": "rfe", "rmsle_val": 1.68539, "rmsle_hon": 1.74897, "secs": null, "notes": "из 296 признаков; полный набор давал 1.68792"}

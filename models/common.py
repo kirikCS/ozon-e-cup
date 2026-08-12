@@ -91,11 +91,13 @@ def build_features(anchors, verbose=True):
                 store[(mname, w, a)] = cs[:, a + 1] - cs[:, s]
         for a in anchors:
             store[(mname, "all", a)] = cs[:, a + 1]
-        # 30-day block lags
+        # 30-day block lags. The end of a block can fall before day 0 for very early anchors —
+        # without the guard the negative index wraps around and silently fabricates values.
         for k in range(1, 7):
             for a in anchors:
                 e = a - 30 * (k - 1); s = e - 29
-                store[(mname, f"blk{k}", a)] = cs[:, e + 1] - cs[:, max(0, s)]
+                store[(mname, f"blk{k}", a)] = (np.zeros(cs.shape[0], cs.dtype) if e < 0
+                                                else cs[:, e + 1] - cs[:, max(0, s)])
         del cs
     # buy days
     BUY = (panel("gmv") > 0).astype(np.int8)
@@ -108,7 +110,8 @@ def build_features(anchors, verbose=True):
     for k in range(1, 7):
         for a in anchors:
             e = a - 30 * (k - 1); s = e - 29
-            store[("buyday", f"blk{k}", a)] = csb[:, e + 1] - csb[:, max(0, s)]
+            store[("buyday", f"blk{k}", a)] = (np.zeros(csb.shape[0], csb.dtype) if e < 0
+                                               else csb[:, e + 1] - csb[:, max(0, s)])
     del csb
 
     ALLM = [m for m, _ in METRICS] + ["buyday"]
