@@ -81,21 +81,30 @@ def entmax15(z, dim=-1):
     ss = r * (mean_sq - mean ** 2)
     delta = torch.clamp((1 - ss) / r, min=0)
     tau = mean - torch.sqrt(delta)
-    support = (tau <= zs).sum(dim, keepdim=True)
+    # support must be at least 1: without the clamp it can reach 0 numerically, gather then reads
+    # index -1 and trips a device-side assert that poisons the CUDA context for the whole process
+    support = (tau <= zs).sum(dim, keepdim=True).clamp(min=1)
     tau_star = tau.gather(dim, support - 1)
     return torch.clamp(z - tau_star, min=0) ** 2
 
 class ODST(nn.Module):
-    """one layer of oblivious differentiable decision trees"""
+    """one layer of oblivious differentiable decision trees.
+
+    The published layer uses entmax for both the feature choice and the leaf response. A literal
+    entmax on the selection tensor collapsed here — the gradient path through the sorted threshold
+    is too weak at 96 features and the layer degenerated to a constant. Replaced by a temperature-
+    annealed softmax, the standard relaxation, which keeps the sparse-selection behaviour with a
+    gradient that actually flows."""
     def __init__(self, f, n_trees=128, depth=6, out=1):
         super().__init__()
         self.n, self.d, self.o = n_trees, depth, out
-        self.sel = nn.Parameter(torch.randn(f, n_trees, depth))
-        self.thr = nn.Parameter(torch.randn(n_trees, depth))
+        self.sel = nn.Parameter(torch.randn(f, n_trees, depth) * 0.5)
+        self.logT = nn.Parameter(torch.zeros(1))
+        self.thr = nn.Parameter(torch.randn(n_trees, depth) * 0.5)
         self.tau = nn.Parameter(torch.ones(n_trees, depth))
-        self.leaf = nn.Parameter(torch.randn(n_trees, 2 ** depth, out) * 0.1)
+        self.leaf = nn.Parameter(torch.randn(n_trees, 2 ** depth, out) * (2 ** depth) ** -0.5)
     def forward(self, x):
-        w = entmax15(self.sel, dim=0)                        # sparse feature choice per split
+        w = torch.softmax(self.sel / self.logT.exp().clamp(0.05, 20.0), dim=0)
         h = torch.einsum("bf,fnd->bnd", x, w)
         h = (h - self.thr) / (self.tau.abs() + 1e-3)
         p = torch.stack([torch.sigmoid(h), 1 - torch.sigmoid(h)], -1)   # B,n,d,2
@@ -179,8 +188,11 @@ class TabM(nn.Module):
         self.k = k
         dims = [f] + list(h)
         self.lin = nn.ModuleList([nn.Linear(dims[i], dims[i + 1]) for i in range(len(h))])
-        self.r = nn.ParameterList([nn.Parameter(torch.randn(k, dims[i]) * 0.1 + 1) for i in range(len(h))])
-        self.s = nn.ParameterList([nn.Parameter(torch.randn(k, dims[i + 1]) * 0.1 + 1) for i in range(len(h))])
+        # BatchEnsemble adapters are initialised with random signs, not near 1: with all-ones the
+        # k members stay nearly identical and averaging them buys nothing
+        sgn = lambda *sh: (torch.randint(0, 2, sh).float() * 2 - 1)
+        self.r = nn.ParameterList([nn.Parameter(sgn(k, dims[i])) for i in range(len(h))])
+        self.s = nn.ParameterList([nn.Parameter(sgn(k, dims[i + 1])) for i in range(len(h))])
         self.bn = nn.ModuleList([nn.BatchNorm1d(dims[i + 1]) for i in range(len(h))])
         self.drop = nn.Dropout(drop)
         self.head = nn.Parameter(torch.randn(k, dims[-1], 1) * dims[-1] ** -0.5)
@@ -294,8 +306,21 @@ def tabnet_fit(Xtr, ytr, Xev):
     return m.predict(Xev).ravel()
 JOBS.append(("TabNet", "zoo_tabnet", tabnet_fit, None))
 
-print(f"\n=== зоопарк табличных архитектур: {len(JOBS)} моделей ===")
-for name, fname, fit, cols in JOBS:
-    print(f"\n{name}")
+# One model per process invocation. A device-side assert inside any CUDA kernel makes the whole
+# context unusable, so a single bad model would otherwise take every model after it down with it —
+# which is exactly what happened on the first run.
+if len(sys.argv) > 1 and sys.argv[1] != "all":
+    want = sys.argv[1]
+    sel = [j for j in JOBS if j[1] == want or j[0] == want]
+    if not sel:
+        print(f"нет такой модели: {want}. Доступны: {[j[1] for j in JOBS]}")
+        sys.exit(1)
+    name, fname, fit, cols = sel[0]
+    print(f"=== {name} ===")
     run_pair(name, fname, fit, cols)
+else:
+    print(f"\n=== зоопарк табличных архитектур: {len(JOBS)} моделей ===")
+    for name, fname, fit, cols in JOBS:
+        print(f"\n{name}")
+        run_pair(name, fname, fit, cols)
 print("\ndone")

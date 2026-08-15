@@ -18,3 +18,19 @@ release/code/
 *.zip
 
 backup/
+
+# handover from teammate: code and docs are kept, heavy artefacts are not
+ecup_handover_2026-08-14/model_out/
+ecup_handover_2026-08-14/submission/
+ecup_handover_2026-08-14/submissions/
+
+# blend manifest is kept (BLEND.md, weights.json, rebuild.py); the component
+# vectors are 79 MB and rebuildable from them
+release_blend/components/
+release_blend/*.csv
+
+# leaderboard vectors at repo root
+/*.csv
+
+# generated leaderboard probes: rebuilt exactly by exp/p3_curvature_probe.py
+submission/queue/
