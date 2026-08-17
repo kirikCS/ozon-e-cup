@@ -44,6 +44,7 @@ SEL_TR, SEL_EV = [318, 290, 262, 234, 206], 348
 NACT = 96
 FIN_TR, FIN_EV = [378, 350, 322, 294, 266], N_DAYS - 1
 EL = 2.3284
+OUTCSV = "submissions/daily_active_bagged.csv"
 
 CH_NAMES = ["gmv", "gmv_search", "ord", "cart", "srch", "visit", "engaged",
             "scart", "sord", "sday", "catday"]
@@ -221,7 +222,6 @@ for tag, TR, EV in (("SELECT", SEL_TR, SEL_EV), ("FINAL", FIN_TR, FIN_EV)):
         f = ens - ens.mean() + EL
         uid = np.load("cache/uids.npy")
         pl.DataFrame({"user_id": uid,
-                      "predict": np.clip(np.expm1(f), 0, None)}).write_csv(
-            "submissions/daily_active_bagged.csv")
-        print(f"  submissions/daily_bagged.csv, mean log1p {f.mean():.4f}")
+                      "predict": np.clip(np.expm1(f), 0, None)}).write_csv(OUTCSV)
+        print(f"  {OUTCSV}, mean log1p {f.mean():.4f}")
 print("\ndone")
