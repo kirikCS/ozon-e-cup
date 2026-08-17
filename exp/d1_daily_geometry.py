@@ -40,7 +40,7 @@ sys.path.insert(0, "code")
 from common import panel, target, rmsle, NU, N_DAYS, H, D0, ds, OUT
 
 DEV = "cuda" if torch.cuda.is_available() else "cpu"
-L, EPOCHS, BS, NPATH, GH = 364, 8, 1024, 96, 16
+L, EPOCHS, BS, NPATH, GH = 364, 8, 512, 96, 16
 SEL_TR, SEL_EV = [318, 290, 262, 234, 206], 348
 HORIZONS = [7, 14, 30, 60]
 BREAK_DAY = 90                      # 2025-04-01
@@ -152,12 +152,15 @@ def run(arm, seed=0):
                     continue
                 x = torch.from_numpy(getw(idx, a)).to(DEV)
                 ex = torch.from_numpy(regime(idx, a)).to(DEV) if extra else None
-                loss = 0.0
+                # градиенты накапливаются ПО ОДНОМУ горизонту за раз. Сложение четырёх лоссов
+                # в один граф держало в памяти четыре прямых прохода сразу и выдало OOM;
+                # backward на каждом горизонте отдельно даёт тот же градиент вчетверо дешевле.
+                opt.zero_grad(set_to_none=True)
                 for hz in hzs:
                     yd = torch.from_numpy(G[idx, a + 1:a + 1 + hz].astype(np.float32)).to(DEV)
-                    loss = loss + loss_fn(*m(x, CAL[(a, hz)], ex, hz), yd) * (1.0 if hz == H else 0.3)
-                opt.zero_grad(set_to_none=True)
-                loss.backward()
+                    (loss_fn(*m(x, CAL[(a, hz)], ex, hz), yd)
+                     * (1.0 if hz == H else 0.3)).backward()
+                    del yd
                 nn.utils.clip_grad_norm_(m.parameters(), 5.0)
                 opt.step()
                 if sch.last_epoch < steps - 1:
@@ -201,9 +204,10 @@ for arm in ("multih", "regime", "active"):
     try:
         v = run(arm)
     except Exception as e:
-        import traceback
-        print(f"{arm:>10}  ОШИБКА {type(e).__name__}: {str(e)[:70]}")
-        traceback.print_exc(limit=2)
+        # без явной очистки после исключения занятая память остаётся у процесса
+        # и роняет следующую руку — на прошлом прогоне это чуть не случилось
+        torch.cuda.empty_cache()
+        print(f"{arm:>10}  ОШИБКА {type(e).__name__}: {str(e)[:70]}", flush=True)
         continue
     RES[arm] = v
     sh = v - v.mean() + ly.mean()
