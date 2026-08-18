@@ -116,10 +116,10 @@ def run(arm, seed=0, TR=None, EV=None, sub=1.0):
     rng = np.random.default_rng(seed)
     m = Net(arm, ks).to(DEV)
     opt = torch.optim.AdamW(m.parameters(), lr=LR, weight_decay=1e-5)
-    steps = EPOCHS * len(TR) * (len(keep) // bs)
-    sch = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=LR, total_steps=max(steps, 10))
     rng2 = np.random.default_rng(seed)
     keep = np.sort(rng2.choice(NU, int(NU*sub), replace=False)) if sub < 1 else np.arange(NU)
+    steps = EPOCHS * len(TR) * (len(keep) // bs)
+    sch = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=LR, total_steps=max(steps, 10))
     Y = {a: target(a).astype(np.float32) for a in TR}
     for _ in range(EPOCHS):
         m.train()

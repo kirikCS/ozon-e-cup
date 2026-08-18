@@ -1,0 +1,138 @@
+<title>Ozon E-CUP · карта исследованных направлений</title>
+<style>
+  :root{
+    --bg:#FBFAF8; --panel:#FFFFFF; --ink:#16202B; --ink2:#4C5A68; --muted:#7C8794;
+    --line:#DFE3E7; --grid:#E7EAEE; --s1:#2563A8; --s2:#C2622D;
+    --s1f:rgba(37,99,168,.13); --s2f:rgba(194,98,45,.15); --accentbar:#2563A8;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --bg:#12161B; --panel:#181D24; --ink:#E8ECF1; --ink2:#AEB9C5; --muted:#7F8B98;
+    --line:#2A323B; --grid:#242C35; --s1:#6BA6E0; --s2:#E29A5E;
+    --s1f:rgba(107,166,224,.16); --s2f:rgba(226,154,94,.18); --accentbar:#6BA6E0;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#12161B; --panel:#181D24; --ink:#E8ECF1; --ink2:#AEB9C5; --muted:#7F8B98;
+    --line:#2A323B; --grid:#242C35; --s1:#6BA6E0; --s2:#E29A5E;
+    --s1f:rgba(107,166,224,.16); --s2f:rgba(226,154,94,.18); --accentbar:#6BA6E0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:44px 22px 72px;display:flex;flex-direction:column;gap:34px}
+  header{display:flex;flex-direction:column;gap:10px;border-left:3px solid var(--accentbar);padding-left:18px}
+  h1{margin:0;font-size:clamp(23px,3.4vw,32px);line-height:1.2;letter-spacing:-.015em;text-wrap:balance;font-weight:650}
+  .sub{margin:0;color:var(--ink2);max-width:62ch}
+  .kpis{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px 15px;min-width:132px}
+  .kpi .k{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .kpi .v{font-size:21px;font-weight:640;font-variant-numeric:tabular-nums;margin-top:3px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px}
+  .chartbox{overflow-x:auto}
+  svg{display:block;margin:0 auto;max-width:100%;height:auto}
+  .ring{fill:none;stroke:var(--grid);stroke-width:1}
+  .spoke{stroke:var(--grid);stroke-width:1}
+  .axlab{font-size:12.5px;fill:var(--ink2)}
+  .s1poly{fill:var(--s1f);stroke:var(--s1);stroke-width:2;stroke-linejoin:round}
+  .s2poly{fill:var(--s2f);stroke:var(--s2);stroke-width:2;stroke-linejoin:round}
+  .dot{stroke:var(--panel);stroke-width:1.5}
+  .dot.s1{fill:var(--s1)} .dot.s2{fill:var(--s2)}
+  .scale{font-size:10.5px;fill:var(--muted);font-variant-numeric:tabular-nums}
+  .legend{display:flex;gap:20px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .lg{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink2)}
+  .sw{width:13px;height:13px;border-radius:3px}
+  h2{margin:0 0 14px;font-size:17px;font-weight:640;letter-spacing:-.005em}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    padding:0 10px 9px;border-bottom:1px solid var(--line);font-weight:600}
+  th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
+  td{padding:10px;border-bottom:1px solid var(--grid);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.note{color:var(--ink2);font-size:13.5px}
+  .read{color:var(--ink2);font-size:15px;max-width:70ch;display:flex;flex-direction:column;gap:11px}
+  .read b{color:var(--ink);font-weight:640}
+  code{font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--grid);
+    padding:1px 5px;border-radius:4px}
+  @media (max-width:620px){ td.note{display:none} th:nth-child(4){display:none} }
+</style>
+<div class="wrap">
+  <header>
+    <h1>Карта исследованных направлений</h1>
+    <p class="sub">Десять семейств подходов, испробованных в задаче прогноза GMV. Радиус —
+      насколько направление исследовано и что оно принесло. Наведи на точку, чтобы увидеть,
+      чем именно закрыто.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="k">лучший вектор</div><div class="v">1,6462436</div></div>
+      <div class="kpi"><div class="k">к топ-1 при передаче</div><div class="v">−0,0018</div></div>
+      <div class="kpi"><div class="k">средняя глубина</div><div class="v">9,1/10</div></div>
+      <div class="kpi"><div class="k">средний выигрыш</div><div class="v">4,9/10</div></div>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="chartbox">
+      <svg viewBox="0 0 680 700" width="680" height="700" role="img"
+           aria-label="Радар: глубина исследования и полученный выигрыш по десяти направлениям">
+        <circle cx="340" cy="330" r="58.8" class="ring"/><circle cx="340" cy="330" r="117.5" class="ring"/><circle cx="340" cy="330" r="176.2" class="ring"/><circle cx="340" cy="330" r="235.0" class="ring"/><line x1="340" y1="330" x2="340.0" y2="95.0" class="spoke"/><line x1="340" y1="330" x2="478.1" y2="139.9" class="spoke"/><line x1="340" y1="330" x2="563.5" y2="257.4" class="spoke"/><line x1="340" y1="330" x2="563.5" y2="402.6" class="spoke"/><line x1="340" y1="330" x2="478.1" y2="520.1" class="spoke"/><line x1="340" y1="330" x2="340.0" y2="565.0" class="spoke"/><line x1="340" y1="330" x2="201.9" y2="520.1" class="spoke"/><line x1="340" y1="330" x2="116.5" y2="402.6" class="spoke"/><line x1="340" y1="330" x2="116.5" y2="257.4" class="spoke"/><line x1="340" y1="330" x2="201.9" y2="139.9" class="spoke"/>
+        <text x="340" y="275" class="scale" text-anchor="middle">2,5</text>
+        <text x="340" y="216" class="scale" text-anchor="middle">5</text>
+        <text x="340" y="158" class="scale" text-anchor="middle">7,5</text>
+        <text x="340" y="99" class="scale" text-anchor="middle">10</text>
+        <polygon points="340.0,95.0 478.1,139.9 541.1,264.6 563.5,402.6 450.5,482.1 340.0,541.5 243.3,463.1 116.5,402.6 138.9,264.6 215.7,158.9" class="s1poly"/>
+        <polygon points="340.0,142.0 478.1,139.9 541.1,264.6 518.8,388.1 395.3,406.0 340.0,377.0 270.9,425.1 273.0,351.8 340.0,330.0 340.0,330.0" class="s2poly"/>
+        <circle cx="340.0" cy="95.0" r="4.5" class="dot s1"><title>Калибровка и зонды — исследовано: 10/10
+6 зондов формы; значим ровно один — кубический (t=−2,95)</title></circle><circle cx="340.0" cy="142.0" r="4.5" class="dot s2"><title>Калибровка и зонды — дало выигрыш: 8/10
+6 зондов формы; значим ровно один — кубический (t=−2,95)</title></circle><circle cx="478.1" cy="139.9" r="4.5" class="dot s1"><title>Стекинг и реестр — исследовано: 10/10
+главный двигатель: точность предсказаний до 2,8·10⁻⁶</title></circle><circle cx="478.1" cy="139.9" r="4.5" class="dot s2"><title>Стекинг и реестр — дало выигрыш: 10/10
+главный двигатель: точность предсказаний до 2,8·10⁻⁶</title></circle><circle cx="541.1" cy="264.6" r="4.5" class="dot s1"><title>Дневные генеративные — исследовано: 9/10
+LB 1,6518, вес в стеке +0,21 — сильнейшая наша компонента</title></circle><circle cx="541.1" cy="264.6" r="4.5" class="dot s2"><title>Дневные генеративные — дало выигрыш: 9/10
+LB 1,6518, вес в стеке +0,21 — сильнейшая наша компонента</title></circle><circle cx="563.5" cy="402.6" r="4.5" class="dot s1"><title>Табличные бустинги — исследовано: 10/10
+костяк стека, но унаследован; наш маржинальный вклад меньше</title></circle><circle cx="518.8" cy="388.1" r="4.5" class="dot s2"><title>Табличные бустинги — дало выигрыш: 8/10
+костяк стека, но унаследован; наш маржинальный вклад меньше</title></circle><circle cx="450.5" cy="482.1" r="4.5" class="dot s1"><title>Событийные модели — исследовано: 8/10
+multi 1,74219 — лучший локально, финальный вектор ещё считается</title></circle><circle cx="395.3" cy="406.0" r="4.5" class="dot s2"><title>Событийные модели — дало выигрыш: 4/10
+multi 1,74219 — лучший локально, финальный вектор ещё считается</title></circle><circle cx="340.0" cy="541.5" r="4.5" class="dot s1"><title>Энкодеры и attention — исследовано: 9/10
+в стеке только с отрицательными весами, как корректоры</title></circle><circle cx="340.0" cy="377.0" r="4.5" class="dot s2"><title>Энкодеры и attention — дало выигрыш: 2/10
+в стеке только с отрицательными весами, как корректоры</title></circle><circle cx="243.3" cy="463.1" r="4.5" class="dot s1"><title>Контрастивное обучение — исследовано: 7/10
+CoLES +0,0469; версия над колонками провалилась</title></circle><circle cx="270.9" cy="425.1" r="4.5" class="dot s2"><title>Контрастивное обучение — дало выигрыш: 5/10
+CoLES +0,0469; версия над колонками провалилась</title></circle><circle cx="116.5" cy="402.6" r="4.5" class="dot s1"><title>Признаки и фичестор — исследовано: 10/10
+RFE, v2/v3 — почти всё ноль; остаток непредсказуем</title></circle><circle cx="273.0" cy="351.8" r="4.5" class="dot s2"><title>Признаки и фичестор — дало выигрыш: 3/10
+RFE, v2/v3 — почти всё ноль; остаток непредсказуем</title></circle><circle cx="138.9" cy="264.6" r="4.5" class="dot s1"><title>Сегментация и кластеры — исследовано: 9/10
+пять зондов и три локальных экрана — все нули</title></circle><circle cx="340.0" cy="330.0" r="4.5" class="dot s2"><title>Сегментация и кластеры — дало выигрыш: 0/10
+пять зондов и три локальных экрана — все нули</title></circle><circle cx="215.7" cy="158.9" r="4.5" class="dot s1"><title>Декомпозиция цели — исследовано: 9/10
+клики×конверсия, каналы, коэффициент — три закрытия</title></circle><circle cx="340.0" cy="330.0" r="4.5" class="dot s2"><title>Декомпозиция цели — дало выигрыш: 0/10
+клики×конверсия, каналы, коэффициент — три закрытия</title></circle><text x="340.0" y="73.9" text-anchor="middle" class="axlab"><tspan x="340.0" dy="-0.15em">Калибровка и</tspan><tspan x="340.0" dy="1.15em">зонды</tspan></text><text x="490.6" y="122.8" text-anchor="start" class="axlab"><tspan x="490.6" dy="-0.15em">Стекинг и</tspan><tspan x="490.6" dy="1.15em">реестр</tspan></text><text x="583.6" y="250.8" dy="-0.15em" text-anchor="start" class="axlab">Дневные генеративные</text><text x="583.6" y="409.2" dy="1em" text-anchor="start" class="axlab">Табличные бустинги</text><text x="490.6" y="537.2" dy="1em" text-anchor="start" class="axlab">Событийные модели</text><text x="340.0" y="586.1" text-anchor="middle" class="axlab"><tspan x="340.0" dy="1em">Энкодеры и</tspan><tspan x="340.0" dy="1.15em">attention</tspan></text><text x="189.4" y="537.2" dy="1em" text-anchor="end" class="axlab">Контрастивное обучение</text><text x="96.4" y="409.2" text-anchor="end" class="axlab"><tspan x="96.4" dy="1em">Признаки и</tspan><tspan x="96.4" dy="1.15em">фичестор</tspan></text><text x="96.4" y="250.8" text-anchor="end" class="axlab"><tspan x="96.4" dy="-0.15em">Сегментация и</tspan><tspan x="96.4" dy="1.15em">кластеры</tspan></text><text x="189.4" y="122.8" dy="-0.15em" text-anchor="end" class="axlab">Декомпозиция цели</text>
+      </svg>
+    </div>
+    <div class="legend">
+      <span class="lg"><span class="sw" style="background:var(--s1)"></span>исследовано</span>
+      <span class="lg"><span class="sw" style="background:var(--s2)"></span>дало выигрыш</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Числа</h2>
+    <table>
+      <thead><tr><th>направление</th><th class="num">иссл.</th><th class="num">выигрыш</th><th>чем закрыто или что дало</th></tr></thead>
+      <tbody><tr><td>Стекинг и реестр</td><td class="num">10</td><td class="num">10</td><td class="note">главный двигатель: точность предсказаний до 2,8·10⁻⁶</td></tr><tr><td>Дневные генеративные</td><td class="num">9</td><td class="num">9</td><td class="note">LB 1,6518, вес в стеке +0,21 — сильнейшая наша компонента</td></tr><tr><td>Калибровка и зонды</td><td class="num">10</td><td class="num">8</td><td class="note">6 зондов формы; значим ровно один — кубический (t=−2,95)</td></tr><tr><td>Табличные бустинги</td><td class="num">10</td><td class="num">8</td><td class="note">костяк стека, но унаследован; наш маржинальный вклад меньше</td></tr><tr><td>Контрастивное обучение</td><td class="num">7</td><td class="num">5</td><td class="note">CoLES +0,0469; версия над колонками провалилась</td></tr><tr><td>Событийные модели</td><td class="num">8</td><td class="num">4</td><td class="note">multi 1,74219 — лучший локально, финальный вектор ещё считается</td></tr><tr><td>Признаки и фичестор</td><td class="num">10</td><td class="num">3</td><td class="note">RFE, v2/v3 — почти всё ноль; остаток непредсказуем</td></tr><tr><td>Энкодеры и attention</td><td class="num">9</td><td class="num">2</td><td class="note">в стеке только с отрицательными весами, как корректоры</td></tr><tr><td>Сегментация и кластеры</td><td class="num">9</td><td class="num">0</td><td class="note">пять зондов и три локальных экрана — все нули</td></tr><tr><td>Декомпозиция цели</td><td class="num">9</td><td class="num">0</td><td class="note">клики×конверсия, каналы, коэффициент — три закрытия</td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Как читать</h2>
+    <div class="read">
+      <p><b>Синий контур почти правильный.</b> Средняя глубина 9,1 из 10 — исследовано всё
+        примерно одинаково тщательно, слепых зон не осталось.</p>
+      <p><b>Охряный контур рваный.</b> Средний выигрыш 4,9, и он сосредоточен в четырёх осях:
+        стекинг, дневные генеративные модели, калибровка и бустинги. Три оси —
+        сегментация, декомпозиция цели и признаки — дали ноль при максимальной глубине проработки.</p>
+      <p><b>Разрыв между контурами и есть содержание работы.</b> Семнадцать направлений закрыты
+        с контролями: случайная разметка той же мощности, второй сид, аффинная поправка,
+        равный бюджет эпох. Без этих контролей четыре из них выглядели бы положительными —
+        в частности «тёплый специалист» давал +0,0022 сверх аффинного, пока второй пул
+        с другим сидом не дал +0,0029.</p>
+      <p><b>Оценки субъективны, числа под ними — нет.</b> Шкала 0–10 расставлена мной по итогам
+        измерений; сами измерения, протоколы и код лежат в <code>knowledge/ecup_knowledge.json</code>,
+        <code>FINISHED-TASKS-LIST.md</code> и <code>solution_context.md</code>.</p>
+    </div>
+  </section>
+</div>
