@@ -33,7 +33,7 @@ SEL_TR, SEL_EV = [318, 290, 262, 234, 206], 348
 BS_EMB = int(os.environ.get("BS_EMB", 128))
 EPOCHS, BS, LR = 8, 512, 2e-3
 NSAMP, GH, SIGMA = 96, 16, 0.8
-MODEL = os.environ.get("TOTO_MODEL", "Datadog/Toto-2.0-22m")
+MODEL = os.environ.get("TOTO_MODEL", "Datadog/Toto-2.0-313m")
 G = panel("gmv").astype(np.float32)
 V = panel("visit").astype(np.float32)
 C = panel("cart").astype(np.float32)
@@ -45,7 +45,7 @@ def win(users, end, chans):
     got = np.stack([M[users, 0:end + 1] for M in chans], 1).astype(np.float32)
     return np.concatenate([np.zeros((len(users), len(chans), -lo), np.float32), got], 2)
 
-print(f"загружаю {MODEL} ...", flush=True)
+print(f"загружаю {MODEL} ...", flush=True)  # 313m: размерность вдвое больше 22m
 toto = Toto2Model.from_pretrained(MODEL).to(DEV).eval()
 for p in toto.parameters():
     p.requires_grad_(False)
@@ -77,20 +77,23 @@ def embed(anchor):
             h = torch.cat([h[:, 0].mean(1), h[:, 0, -1]], -1)
         else:
             h = h.flatten(1)
-        outs.append(h.float().cpu().numpy())
-    return np.concatenate(outs, 0)
+        outs.append(h.half().cpu().numpy())   # float16: у 313m размерность вдвое больше
+    return np.concatenate(outs, 0).astype(np.float32)
 
 print("снимаю представления ...", flush=True)
 t0 = time.time()
 EMB = {}
 for a in SEL_TR + [SEL_EV]:
-    EMB[a] = embed(a)
-    print(f"  якорь {a}: {EMB[a].shape}  ({time.time()-t0:.0f}s)", flush=True)
+    e_ = embed(a)
+    EMB[a] = e_.astype(np.float16)
+    print(f"  якорь {a}: {e_.shape}  {e_.nbytes/2/1e9:.2f} ГБ (fp16)  ({time.time()-t0:.0f}s)",
+          flush=True)
+    del e_
 D = EMB[SEL_EV].shape[1]
-mu_ = np.mean([EMB[a].mean(0) for a in SEL_TR], 0)
-sd_ = np.maximum(np.mean([EMB[a].std(0) for a in SEL_TR], 0), 1e-3)
+mu_ = np.mean([EMB[a].astype(np.float32).mean(0) for a in SEL_TR], 0)
+sd_ = np.maximum(np.mean([EMB[a].astype(np.float32).std(0) for a in SEL_TR], 0), 1e-3)
 for a in EMB:
-    EMB[a] = np.clip((EMB[a] - mu_) / sd_, -8, 8).astype(np.float32)
+    EMB[a] = np.clip((EMB[a].astype(np.float32) - mu_) / sd_, -8, 8).astype(np.float16)
 
 class Head(nn.Module):
     def __init__(self, din, d=192):
@@ -124,7 +127,7 @@ def run(tag, feats, seed=0):
             for i in range(0, NU, BS):
                 idx = np.sort(perm[i:i + BS])
                 if len(idx) < 64: continue
-                e = torch.from_numpy(feats[a][idx]).to(DEV)
+                e = torch.from_numpy(feats[a][idx].astype(np.float32)).to(DEV)
                 yd = torch.from_numpy(G[idx, a + 1:a + 1 + HOR].astype(np.float32)).to(DEV)
                 opt.zero_grad(set_to_none=True)
                 loss_fn(*m(e), yd).backward()
@@ -137,7 +140,7 @@ def run(tag, feats, seed=0):
     with torch.no_grad():
         for i in range(0, NU, 1024):
             idx = np.arange(i, min(i + 1024, NU))
-            hz, mu, ls = m(torch.from_numpy(feats[SEL_EV][idx]).to(DEV))
+            hz, mu, ls = m(torch.from_numpy(feats[SEL_EV][idx].astype(np.float32)).to(DEV))
             hz = hz * scale; sd = ls.exp()
             acc = torch.zeros(len(idx), device=DEV)
             for zn, wn in zip(nodes, wts):
@@ -168,16 +171,16 @@ np.save(OUT / "k3_toto_frozen.npy", v)
 
 # КОНТРОЛЬ: та же голова на случайной проекции сырого окна той же размерности
 rs = np.random.default_rng(0)
-W = rs.standard_normal((len(CH) * CTX, min(D, 1024))).astype(np.float32) / np.sqrt(len(CH) * CTX)
+W = rs.standard_normal((len(CH) * CTX, D)).astype(np.float32) / np.sqrt(len(CH) * CTX)
 RND = {}
 for a in SEL_TR + [SEL_EV]:
     X = win(np.arange(NU), a, CH).reshape(NU, -1)
     X = np.log1p(np.maximum(X, 0))
-    RND[a] = (X @ W).astype(np.float32)
-mu2 = np.mean([RND[a].mean(0) for a in SEL_TR], 0)
-sd2 = np.maximum(np.mean([RND[a].std(0) for a in SEL_TR], 0), 1e-3)
+    RND[a] = (X @ W).astype(np.float16)
+mu2 = np.mean([RND[a].astype(np.float32).mean(0) for a in SEL_TR], 0)
+sd2 = np.maximum(np.mean([RND[a].astype(np.float32).std(0) for a in SEL_TR], 0), 1e-3)
 for a in RND:
-    RND[a] = np.clip((RND[a] - mu2) / sd2, -8, 8).astype(np.float32)
+    RND[a] = np.clip((RND[a].astype(np.float32) - mu2) / sd2, -8, 8).astype(np.float16)
 t0 = time.time()
 v2 = run("random_proj", RND)
 sh2 = v2 - v2.mean() + ly.mean()
