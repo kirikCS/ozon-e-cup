@@ -414,3 +414,67 @@ significantly better!** I was going to leave these easy score gains on the table
 независимо вывели `SE(ΔRMSLE) ≈ rms(Δlog1p)/√n` и дали 1,303e-4 против 1,328e-4.
 
 Источники: [DF-2025 4Cast разбор](https://habr.com/ru/companies/T1Holding/articles/924762/) · [Favorita 1 место](https://www.kaggle.com/c/favorita-grocery-sales-forecasting/discussion/47582) · [sjv 4 место](https://www.kaggle.com/c/favorita-grocery-sales-forecasting/discussion/47529) · [Giba & CPMP](https://www.kaggle.com/c/favorita-grocery-sales-forecasting/discussion/47564) · [Web Traffic 1 место](https://github.com/Arturus/kaggle-web-traffic/blob/master/how_it_works.md) · [ZILN arXiv:1912.07753](https://arxiv.org/abs/1912.07753) · [DF-2024 Отток 1 место](https://habr.com/ru/companies/T1Holding/articles/856228/)
+
+
+---
+
+## 12. Recruit Restaurant и Rossmann
+
+**Самое ценное для нас — инсайт 2 места Rossmann (Nima Shahbazi) про нули.** Дословно:
+«all the scripts in the Kaggle community **remove the zero sales** before starting to create a
+model. I thought that there must be something related to these zero sale days. So I did not
+remove them… I was surprised when I found out that there was a relation between consequence
+close (zero sales) and **unexpected sales before or after opening the store**.»
+
+Признак `MyRowHoliday`: положительные целые **до и после серии подряд идущих нулей**, −1 в
+обычные дни. При наших 44% нулей это, вероятно, самый недооценённый признак из всей разведки —
+и он отличается от того, что мы ставим в `r4`: там «давность последнего ненулевого», а здесь
+позиция относительно **блока**, причём с обеих сторон.
+
+**Ловушка, в которую легко попасть, читая Rossmann: множитель 0,985.** Победитель применил 0,995
+и жалеет: «I should have applied the mathematical estimate of **0,985**». Но это решение
+`argmin E[((y−y*)/y)²]` для **RMSPE**: если `log(y) ~ N(log y₀, σ²)`, то `y* = y₀·exp(−1,5σ²)`,
+и при σ ≈ 0,1 выходит 0,985. RMSPE делит ошибку на истинное значение, поэтому недооценка
+штрафуется слабее и оптимум смещается вниз. **К RMSLE неприменимо**: при L2 на `log1p` оптимум —
+условное среднее в лог-пространстве, поправка ≈ 0.
+
+**Golden Week trick (Recruit)** — пост-обработка сабмита геометрическим средним ближайших
+«нормальных» дней того же типа: `pred[праздник] = sqrt(pred[ближайшая суббота до] ×
+pred[ближайшая суббота после])`, и обязательно в консервативном варианте
+`sqrt(tmp × pred_исходное)`. Дал **0,008–0,009 RMSLE** поверх модели 1 места, у которой уже были
+все праздничные признаки. Верифицировано независимо: воспроизведение модели победителя (0,502) +
+трюк → **0,500**, то есть лучше реального первого места.
+
+Для нас прямого аналога нет: у нас цель — сумма за 30 дней, а не подённые значения, и
+праздничная надбавка уже в калибровке уровня (3.43).
+
+**Экспоненциальные веса — три разные вещи, и топы использовали все три:** как признак
+(победитель Recruit: восемь коэффициентов затухания сразу, `0.9 … 0.9999` — пусть GBDT сам
+выберет горизонт); как `sample_weight` (20 место: полураспад 60 дней); как степенной вес по
+индексу даты (hklee: `((i+1)/N)^5`, готовая абляция 0,509 → 0,503 → 0,500 → 0,498 → **0,497**
+при степени 1→5).
+
+**Отбор признаков у победителя Rossmann:** >500 моделей на случайных подмножествах признаков,
+затем систематический перебор **всех пар** (500·499/2 ≈ 125k) по ошибке на холдауте, жадный
+форвард-отбор, и ключевой ход — «I got the idea to take the features from **all of the selected
+models together and combine them into one model: this turned out to work very well**». Его же
+удивление: «I was surprised by the fact that I could use my holdout set to select model pairs
+from over 500·250 pairs **without overfitting**».
+
+**Что НЕ переносится — и это важнее списка приёмов.** В Recruit public — это первые 6 дней теста,
+в Rossmann и M5 разбиение тоже по времени. Оттуда вся лора про шейкапы, включая измеренное
+«public-подобная валидация систематически предпочитает бо́льшую глубину, private-подобная —
+меньшую» (Recruit discussion/46602, 409 rolling-origin фолдов). **У нас разбиение по клиентам на
+одном и том же окне** (`task.md`: 20/80), поэтому public — несмещённая оценка private, и весь
+риск сводится к выборочному шуму, который считается формулой. Читать эти разборы как предупреждение
+о шейкапе — ошибка.
+
+**Заявленные провалы, полезные нам.** Победитель Recruit: «All of my fiendishly clever feature
+engineering wasn't helpful»; бленд xgb+lgb+nn дал **+0,0002**, а бленд разных длин таргет-окна —
+**+0,002**. Победитель Rossmann: «Most of the individual XGBoost models already achieve around
+0,105» при финале 0,10021, и «XGBoost predictions **without feature engineering** were already
+quite good; the improvements that full feature engineering gave were really about finetuning».
+Внешние данные (население, доходы, Google Trends) не помогли — помогла только погода.
+Spread-признаки (std, skew, kurtosis) «made overfitting easy».
+
+Источники: [Rossmann 1 место, PDF](https://storage.googleapis.com/kaggle-forum-message-attachments/102102/3454/Rossmann_nr1_doc.pdf) · [Rossmann 2 место](http://blog.kaggle.com/2016/02/03/rossmann-store-sales-winners-interview-2nd-place-nima-shahbazi/) · [Golden Week trick](https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting/discussion/49100) · [Recruit 1 место, код](https://www.kaggle.com/code/pureheart/1st-place-lgb-model-public-0-470-private-0-502) · [Entity embeddings arXiv:1604.06737](https://arxiv.org/abs/1604.06737)

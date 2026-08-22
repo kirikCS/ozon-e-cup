@@ -105,6 +105,8 @@
 | F6 | `P(alive)` и `E[transactions]` из BG/NBD **как две колонки в GBDT** | BTYD как источник признаков, а не как модель | 1 ч |
 | F7 | Распределение межсобытийных интервалов внутри клиента (среднее, медиана, макс, коэф. вариации) по каждому каналу | RecSys 2015 (dwell time) | 1 ч |
 | F8 | Сглаженное ядро года назад `0.25·d364 + 0.5·d365 + 0.25·d366` | Web Traffic 1 место (компенсирует високосность) | 1 слот |
+| F10 | **Позиция относительно БЛОКА нулей**: счётчик дней до и после непрерывной серии нулевых дней, −1 в обычные дни | Rossmann 2 место (Nima Shahbazi): «all the scripts remove the zero sales… I did not remove them… there was a relation between consecutive close and **unexpected sales before or after** opening» | 1 ч |
+| F11 | Отбор признаков перебором ВСЕХ пар моделей на холдауте, затем объединение признаков всех отобранных в одну модель | Rossmann 1 место: 500 моделей на случайных подмножествах → перебор 125k пар → «take the features from all of the selected models together and combine them into one model: **this turned out to work very well**» | 3 ч |
 | F9 | Отбор признаков по KS-тесту между обучающим и целевым окном; фильтрация аномальных клиентов | AVS 51 место; DF-2024 Отток 1 место — **фильтрация аномалий подняла с 14 паблик-места на 1 приват** | 1 ч |
 
 ---
@@ -135,6 +137,9 @@
 | **Стекинг поверх нестационарной панели** | Santander ProdRec 2 место: «pattern differences were too variable over time for the value of stacking to kick in», стекинг **стабильно хуже** взвешенного среднего. Favorita 1 место: «Stacking doesn't work well this time» |
 | **Архитектурный поиск** | Web Traffic 1 место: «best model score depends more on the data signal-to-noise ratio than on the model architecture» |
 | **Лик-охота** | Santander Value свёлся к лику целиком; переноса нет |
+| **Мультипликативная поправка 0,985** | Это решение `argmin E[((y−y*)/y)²]` для **RMSPE**: `y* = y₀·exp(−1,5σ²)`. К RMSLE неприменимо: при L2 на `log1p` оптимум — условное среднее в лог-пространстве, поправка ≈ 0. Ловушка, в которую легко попасть, читая разборы Rossmann |
+| **Уроки шейкапов Recruit / Rossmann / M5** | Там public отделён **по времени** (Recruit: public = первые 6 дней), поэтому public — смещённая оценка, и «public-подобная валидация предпочитает бо́льшую сложность». У нас разбиение **по клиентам** на одном окне (`task.md`, 20/80), public несмещён. Эта лора не переносится |
+| **Entity embeddings** | Дают крупный выигрыш (GBT 0,152 → 0,115 на временно́м сплите), но требуют категориальных признаков высокой мощности. У нас 11 числовых каналов и агрегаты — категорий нет |
 
 ---
 
