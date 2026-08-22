@@ -95,6 +95,7 @@ class GRN(nn.Module):
 
 USE_MASK = False
 NOSOFTMAX = False
+MASKMODE = "vsn"
 
 def win(users, end):
     s = end - L + 1
@@ -147,20 +148,32 @@ class Trunk(nn.Module):
 class Model(nn.Module):
     def __init__(self, arm, d=128, dctx=64):
         super().__init__()
-        nch = CH + (1 if USE_MASK else 0)
+        # MASKMODE: "vsn" — маска идёт КАНАЛОМ в VSN (меняет nvar, смешивает две правки);
+        #           "trunk" — маска минует VSN и входит во входную проекцию ствола, как в
+        #           PatchTST-FM (in_layer(cat([x_patch, ~mask]))). VSN отбирает среди каналов
+        #           ДАННЫХ, а маска — метаданные о валидности, ей там не место.
+        mv = USE_MASK and MASKMODE == "vsn"
+        mt = USE_MASK and MASKMODE == "trunk"
+        nch = CH + (1 if mv else 0)
+        self.mask_to_trunk = mt
         self.use_vsn = arm in ("vsn", "all")
         self.use_st = arm in ("static", "all")
         self.stat = GRN(FS, 256, dctx) if self.use_st else None
         self.vsn = VSN(nch, 16, dctx if self.use_st else None) if self.use_vsn else None
-        self.trunk = Trunk(16 if self.use_vsn else nch, nbeats=(arm == "all"))
+        tin = (16 if self.use_vsn else nch) + (1 if mt else 0)
+        self.trunk = Trunk(tin, nbeats=(arm == "all"))
         self.pos = nn.Parameter(torch.randn(H, 16) * 0.02)
         din = self.trunk.out + 10 + 16 + (dctx if self.use_st else 0)
         self.net = nn.Sequential(nn.Linear(din, d), nn.SiLU(), nn.Linear(d, d), nn.SiLU(),
                                  nn.Linear(d, 3))
     def forward(self, x, cal, st=None):
         c = self.stat(st) if self.use_st else None
+        if self.mask_to_trunk:
+            x, msk = x[:, :CH], x[:, CH:CH + 1]
         if self.use_vsn:
             x, _ = self.vsn(x, c)
+        if self.mask_to_trunk:
+            x = torch.cat([x, msk], 1)
         h = self.trunk(x); B = h.shape[0]
         parts = [h.unsqueeze(1).expand(B, H, -1), cal.unsqueeze(0).expand(B, H, -1),
                  self.pos.unsqueeze(0).expand(B, H, -1)]
@@ -227,14 +240,15 @@ print(f"\n=== правки из foundation-моделей (tft_all, сид 0) ==
 print(f"паддинг в окне L={L}: якорь 206 — {max(0,L-207)/L:.1%}, 318 — {max(0,L-319)/L:.1%}, "
       f"348 — {max(0,L-349)/L:.1%}, 408 — 0%", flush=True)
 print(f"\n{'рука':>8} {'маска':>7} {'без softmax':>12} {'RMSLE':>10} {'сек':>7}", flush=True)
-CFG = {"base": (False, False), "mask": (True, False),
-       "nosm": (False, True),  "both": (True, True)}
+CFG = {"base":  (False, False, "vsn"),   "mask":  (True, False, "vsn"),
+       "nosm":  (False, True,  "vsn"),   "both":  (True, True,  "vsn"),
+       "maskT": (True,  False, "trunk"), "bothT": (True, True,  "trunk")}
 for nm in ONLY:
     if nm not in CFG: continue
-    globals()["USE_MASK"], globals()["NOSOFTMAX"] = CFG[nm]
+    globals()["USE_MASK"], globals()["NOSOFTMAX"], globals()["MASKMODE"] = CFG[nm]
     t0 = time.time()
     v = run("all", seed=0)
     np.save(OUT / f"s1_{nm}.npy", v)
-    print(f"{nm:>8} {str(CFG[nm][0]):>7} {str(CFG[nm][1]):>12} {sc(v):10.5f} "
+    print(f"{nm:>8} {(CFG[nm][2] if CFG[nm][0] else '-'):>7} {str(CFG[nm][1]):>12} {sc(v):10.5f} "
           f"{time.time()-t0:7.0f}", flush=True)
 print("\ndone")
