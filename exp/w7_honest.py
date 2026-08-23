@@ -18,6 +18,11 @@ import numpy as np
 from pathlib import Path
 from common import target, rmsle, OUT
 
+import re as _re
+# ЛЮБОЙ вектор вида <буква><цифры>_... — кандидат. Перечисление префиксов подводило четырежды:
+# забытый v11 не совпал с "v1_" и уехал В БАЗИС, изменив все вклады. Регулярка не забывается.
+CANDRX = _re.compile(r"^[suvw]\d+_")
+
 LEAK_RMSLE = 1.70
 
 def leaky(name, score):
@@ -40,7 +45,7 @@ for p in sorted(Path(OUT).glob("*.npy")):
         continue
     if leaky(p.stem, sc):
         DROP.append(p.stem); continue
-    (CAND if p.stem.startswith(PREF) else BASE)[p.stem] = v - v.mean()
+    (CAND if CANDRX.match(p.stem) else BASE)[p.stem] = v - v.mean()
 print(f"отброшено по утечке {len(DROP)}: {DROP}")
 print(f"в базисе {len(BASE)}, кандидатов {len(CAND)}", flush=True)
 

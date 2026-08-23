@@ -23,6 +23,11 @@ import numpy as np
 from pathlib import Path
 from common import target, rmsle, OUT
 
+import re as _re
+# ЛЮБОЙ вектор вида <буква><цифры>_... — кандидат. Перечисление префиксов подводило четырежды:
+# забытый v11 не совпал с "v1_" и уехал В БАЗИС, изменив все вклады. Регулярка не забывается.
+CANDRX = _re.compile(r"^[suvw]\d+_")
+
 CAND_NAME = os.environ.get("CAND", "u2_xdec")
 NTRY = int(os.environ.get("NTRY", 6))
 LEAK_RMSLE = 1.70
@@ -44,7 +49,7 @@ for p in sorted(Path(OUT).glob("*.npy")):
     sc = rmsle(y, np.expm1(np.clip(v - v.mean() + ly.mean(), 0, 13)))
     if sc >= 1.80 or leaky(p.stem, sc):
         continue
-    (CAND if p.stem.startswith(PREF) else BASE)[p.stem] = v - v.mean()
+    (CAND if CANDRX.match(p.stem) else BASE)[p.stem] = v - v.mean()
 assert CAND_NAME in CAND, f"нет кандидата {CAND_NAME}"
 cv = CAND[CAND_NAME]
 print(f"кандидат {CAND_NAME}, в базисе {len(BASE)}", flush=True)

@@ -17,6 +17,11 @@ import numpy as np
 from pathlib import Path
 from common import target, rmsle, OUT
 
+import re as _re
+# ЛЮБОЙ вектор вида <буква><цифры>_... — кандидат. Перечисление префиксов подводило четырежды:
+# забытый v11 не совпал с "v1_" и уехал В БАЗИС, изменив все вклады. Регулярка не забывается.
+CANDRX = _re.compile(r"^[suvw]\d+_")
+
 PREF = tuple(f"{k}_" for k in ("s6", "s7", "s8", "u1", "u2", "u3", "u4", "u5", "u6",
                                "v1", "v2", "v3", "v4", "v5", "v6", "v7"))
 NSTEP = int(__import__("os").environ.get("NSTEP", 8))
@@ -44,7 +49,7 @@ for p in sorted(Path(OUT).glob("*.npy")):
     if leaky(p.stem, sc):
         DROP.append(p.stem)
         continue
-    (CAND if p.stem.startswith(PREF) else BASE)[p.stem] = v - v.mean()
+    (CAND if CANDRX.match(p.stem) else BASE)[p.stem] = v - v.mean()
 print(f"ОТБРОШЕНО ПО УТЕЧКЕ {len(DROP)}: {DROP}")
 print(f"в базисе {len(BASE)}, кандидатов {len(CAND)}", flush=True)
 
