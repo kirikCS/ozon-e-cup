@@ -20,8 +20,17 @@ from common import target, rmsle, OUT
 PREF = tuple(f"{k}_" for k in ("s6", "s7", "s8", "u1", "u2", "u3", "u4", "u5", "u6",
                                "v1", "v2", "v3", "v4", "v5", "v6", "v7"))
 NSTEP = int(__import__("os").environ.get("NSTEP", 8))
+LEAK_RMSLE = 1.70   # честный потолок: лучшая одиночная модель (лестница) даёт 1,73556
+
+def leaky(name, score):
+    """Вектор с ФИНАЛЬНОГО якоря 408 читает историю по 408-й день, а значит целевое окно
+    якоря 348 (дни 349-378) лежит у него на ВХОДЕ. Такой вектор нельзя пускать ни в
+    кандидаты, ни в базис. Ловим двумя способами сразу: по имени и по числу — имя можно
+    забыть проставить, а скор 1,515 против честных 1,736 не подделаешь."""
+    return ("fin" in name) or (score < LEAK_RMSLE)
+
 y = target(348); ly = np.log1p(y)
-BASE, CAND = {}, {}
+BASE, CAND, DROP = {}, {}, []
 for p in sorted(Path(OUT).glob("*.npy")):
     try:
         v = np.load(p)
@@ -29,9 +38,14 @@ for p in sorted(Path(OUT).glob("*.npy")):
         continue
     if v.shape != (250000,) or not np.isfinite(v).all():
         continue
-    if rmsle(y, np.expm1(np.clip(v - v.mean() + ly.mean(), 0, 13))) >= 1.80:
+    sc = rmsle(y, np.expm1(np.clip(v - v.mean() + ly.mean(), 0, 13)))
+    if sc >= 1.80:
+        continue
+    if leaky(p.stem, sc):
+        DROP.append(p.stem)
         continue
     (CAND if p.stem.startswith(PREF) else BASE)[p.stem] = v - v.mean()
+print(f"ОТБРОШЕНО ПО УТЕЧКЕ {len(DROP)}: {DROP}")
 print(f"в базисе {len(BASE)}, кандидатов {len(CAND)}", flush=True)
 
 def fit_eval(cols, fm, em, lam=1e-4):

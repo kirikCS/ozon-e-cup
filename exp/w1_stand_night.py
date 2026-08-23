@@ -29,8 +29,17 @@ from common import target, rmsle, OUT
 PREF = tuple(f"{k}_" for k in
              ("s6", "s7", "s8", "u1", "u2", "u3", "u4", "u5", "u6",
               "v1", "v2", "v3", "v4", "v5"))
+LEAK_RMSLE = 1.70   # честный потолок: лучшая одиночная модель (лестница) даёт 1,73556
+
+def leaky(name, score):
+    """Вектор с ФИНАЛЬНОГО якоря 408 читает историю по 408-й день, а значит целевое окно
+    якоря 348 (дни 349-378) лежит у него на ВХОДЕ. Такой вектор нельзя пускать ни в
+    кандидаты, ни в базис. Ловим двумя способами сразу: по имени и по числу — имя можно
+    забыть проставить, а скор 1,515 против честных 1,736 не подделаешь."""
+    return ("fin" in name) or (score < LEAK_RMSLE)
+
 y = target(348); ly = np.log1p(y)
-BASE, CAND, SCORE = {}, {}, {}
+BASE, CAND, SCORE, DROP = {}, {}, {}, []
 for p in sorted(Path(OUT).glob("*.npy")):
     try:
         v = np.load(p)
@@ -41,8 +50,12 @@ for p in sorted(Path(OUT).glob("*.npy")):
     s = rmsle(y, np.expm1(np.clip(v - v.mean() + ly.mean(), 0, 13)))
     if s >= 1.80:
         continue
+    if leaky(p.stem, s):
+        DROP.append(p.stem)
+        continue
     SCORE[p.stem] = s
     (CAND if p.stem.startswith(PREF) else BASE)[p.stem] = v - v.mean()
+print(f"ОТБРОШЕНО ПО УТЕЧКЕ {len(DROP)}: {DROP}")
 print(f"в базисе {len(BASE)} векторов, кандидатов {len(CAND)}")
 for k in CAND:
     print(f"  {k:>22} одиночный RMSLE {SCORE[k]:.5f}")
