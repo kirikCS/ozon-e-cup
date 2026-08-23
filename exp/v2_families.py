@@ -200,12 +200,12 @@ for spec in os.environ.get("V2ARMS", "gru96:gru,gru96:declm,gru96:bienc").split(
         v, npar = run(arm)
     except Exception as e:
         torch.cuda.empty_cache()
-        print(f"{arm:>10}  ОШИБКА {type(e).__name__}: {str(e)[:60]}", flush=True)
+        print(f"{spec:>16}  ОШИБКА {type(e).__name__}: {str(e)[:60]}", flush=True)
         continue
     RES[spec] = v
     sh = v - v.mean() + ly.mean()
     c = np.corrcoef(v, ref)[0, 1] if ref is not None else float("nan")
-    print(f"{arm:>10} {npar/1e6:8.2f}М {rmsle(y, np.expm1(np.clip(sh,0,13))):9.5f} "
+    print(f"{spec:>16} {npar/1e6:8.2f}М {rmsle(y, np.expm1(np.clip(sh,0,13))):9.5f} "
           f"{c:16.5f} {time.time()-t0:7.0f}", flush=True)
     np.save(OUT / f"v2_{arm}_{famv}.npy", v)
 if len(RES) > 1:
