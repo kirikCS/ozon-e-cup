@@ -26,7 +26,7 @@ from common import target, rmsle, OUT
 import re as _re
 # ЛЮБОЙ вектор вида <буква><цифры>_... — кандидат. Перечисление префиксов подводило четырежды:
 # забытый v11 не совпал с "v1_" и уехал В БАЗИС, изменив все вклады. Регулярка не забывается.
-CANDRX = _re.compile(r"^[suvw]\d+_")
+CANDRX = _re.compile(r"^[suvwx]\d+_")
 
 CAND_NAME = os.environ.get("CAND", "u2_xdec")
 NTRY = int(os.environ.get("NTRY", 6))

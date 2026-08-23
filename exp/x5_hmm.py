@@ -16,10 +16,23 @@
 то есть O(30 * K^2) на клиента и на узел t, ТОЧНО, без симуляции. Дальше — та же квадратура
 Фруллани, что уже работает. Модель новая, считыватель существующий.
 
-Неоднородность клиентов. Глобальная HMM дала бы всем одинаковую динамику. Поэтому эмиссия
-масштабируется собственным темпом клиента: вероятность покупки в состоянии s у клиента i равна
-clip(pi_s * r_i / r_срednee), а величина чека сдвигается на собственное среднее клиента. EM при
-этом остаётся простым: подбираются pi_s, mu_s, sigma_s и матрица переходов A.
+Неоднородность клиентов — в ЛОГИТЕ, и это исправление первой версии.
+
+Сначала я написал эмиссию как p = pi_s * (r_i / r_среднее) с обрезкой, а M-шаг — как простое
+отношение взвешенных сумм. Это замкнутая форма для модели БЕЗ клиентского множителя и без
+обрезки, то есть форма и обновление друг другу не соответствовали. Итог: правдоподобие пошло
+вниз после первой итерации (-228,4 -> -87,0 -> -92,1 -> ... -> -92,7), а состояния схлопнулись
+в почти одинаковые (pi от 0,125 до 0,148). Единственное, что уцелело, — структура переходов:
+диагональ A [0,981, 0,555, 0,450, 0,421, 0,409], одно устойчивое состояние и четыре текучих.
+
+Здесь p_{i,s} = sigmoid(a_s + b_i), где b_i = логит собственного темпа клиента (фиксирован), а
+a_s обновляется шагом Ньютона по взвешенному бернуллиевому правдоподобию:
+
+    dL/da_s  = sum gamma * (z - sigma),    d2L/da_s2 = -sum gamma * sigma * (1 - sigma)
+
+Это обобщённый EM: он улучшает, а не максимизирует, и монотонность сохраняет. Обрезка не нужна
+вовсе — сигмоида сама держит вероятность в (0,1). Правдоподобие обязано расти монотонно, и если
+оно снова упадёт, значит ошибка в другом месте.
 
 Ожидание по точности, записанное заранее: 1,75-1,78, то есть хуже наших 1,741. Это ровно та
 полоса, где event_multi (1,74367) получил наибольший вес в четвёрке, а grn (1,77405) вошёл в
@@ -48,23 +61,27 @@ cnt = np.maximum(Z.sum(1), 1)
 cm = (LG.sum(1) / cnt).astype(np.float32)            # собственный средний чек
 print(f"панель {Z.shape}, доля активных {Z.mean():.4f}, K={K}", flush=True)
 
-pi = torch.linspace(0.2, 2.5, K, device=DEV).double()        # множитель темпа по состояниям
-mu = torch.zeros(K, device=DEV).double()                     # сдвиг чека по состояниям
+b = torch.from_numpy(np.log(np.clip(r, 1e-4, 0.5) / (1 - np.clip(r, 1e-4, 0.5)))).to(DEV).double()
+a = torch.linspace(-1.5, 1.5, K, device=DEV).double()      # сдвиг логита по состояниям
+mu = torch.zeros(K, device=DEV).double()
 sg = torch.full((K,), 1.0, device=DEV).double()
 A = (torch.eye(K, device=DEV).double() * 6.0 + 1.0)
 A = A / A.sum(1, keepdim=True)
 p0 = torch.full((K,), 1.0 / K, device=DEV).double()
 
-def emis(zc, lgc, rc, cmc):
-    """логарифм вероятности наблюдения в каждом состоянии: (B, T, K)"""
-    pr = (pi.view(1, 1, -1) * (rc / rbar).view(-1, 1, 1)).clamp(1e-4, 0.98)
-    lp0 = torch.log1p(-pr)
+def logits(bc):
+    return a.view(1, 1, -1) + bc.view(-1, 1, 1)                       # (B,T,K)
+
+def emis(zc, lgc, bc, cmc):
+    lo = logits(bc)
+    lp1 = -torch.nn.functional.softplus(-lo)                          # log sigmoid
+    lp0 = -torch.nn.functional.softplus(lo)                           # log(1-sigmoid)
     x = (lgc.unsqueeze(-1) - cmc.view(-1, 1, 1) - mu.view(1, 1, -1)) / sg.view(1, 1, -1)
-    lp1 = torch.log(pr) - 0.5 * x * x - torch.log(sg.view(1, 1, -1)) - 0.9189385332
-    return torch.where(zc.unsqueeze(-1), lp1, lp0)
+    lpa = -0.5 * x * x - torch.log(sg.view(1, 1, -1)) - 0.9189385332
+    return torch.where(zc.unsqueeze(-1), lp1 + lpa, lp0)
 
 def fb(le):
-    """прямой-обратный ход в логарифмах: возвращает гамму, кси-сумму и правдоподобие"""
+    """прямой-обратный ход в логарифмах"""
     B, Tt, _ = le.shape
     lA = torch.log(A).unsqueeze(0)
     al = torch.empty(B, Tt, K, dtype=torch.float64, device=DEV)
@@ -80,14 +97,14 @@ def fb(le):
     for t_ in range(Tt - 1):
         m_ = al[:, t_].unsqueeze(-1) + lA + (le[:, t_ + 1] + be[:, t_ + 1]).unsqueeze(1)
         xi += torch.exp(m_ - ll.view(-1, 1, 1)).sum(0)
-    return gam, xi, ll.sum(), al[:, -1]
+    return gam, xi, ll.sum()
 
 print(f"\n{'итерация':>9} {'логправдоподобие':>18} {'сек':>7}", flush=True)
 for it in range(ITERS):
     t0 = time.time()
     nx = torch.zeros(K, K, dtype=torch.float64, device=DEV)
-    s_g = torch.zeros(K, dtype=torch.float64, device=DEV)
-    s_gz = torch.zeros(K, dtype=torch.float64, device=DEV)
+    g1 = torch.zeros(K, dtype=torch.float64, device=DEV)     # первая производная по a_s
+    g2 = torch.zeros(K, dtype=torch.float64, device=DEV)     # вторая (со знаком минус)
     s_w = torch.zeros(K, dtype=torch.float64, device=DEV)
     s_x = torch.zeros(K, dtype=torch.float64, device=DEV)
     s_x2 = torch.zeros(K, dtype=torch.float64, device=DEV)
@@ -97,28 +114,30 @@ for it in range(ITERS):
         j = min(i + CH, NU)
         zc = torch.from_numpy(Z[i:j]).to(DEV)
         lgc = torch.from_numpy(LG[i:j]).to(DEV).double()
-        rc = torch.from_numpy(r[i:j]).to(DEV).double()
+        bc = b[i:j]
         cmc = torch.from_numpy(cm[i:j]).to(DEV).double()
-        gam, xi, ll, _ = fb(emis(zc, lgc, rc, cmc))
+        gam, xi, ll = fb(emis(zc, lgc, bc, cmc))
         nx += xi; tot += float(ll)
         s_p0 += gam[:, 0].sum(0)
-        w = gam * (rc / rbar).view(-1, 1, 1)
-        s_g += w.sum((0, 1))
-        s_gz += (w * zc.unsqueeze(-1)).sum((0, 1))
+        sig = torch.sigmoid(logits(bc))
+        g1 += (gam * (zc.unsqueeze(-1).double() - sig)).sum((0, 1))
+        g2 += (gam * sig * (1.0 - sig)).sum((0, 1))
         gz = gam * zc.unsqueeze(-1)
         d = (lgc - cmc.view(-1, 1)).unsqueeze(-1)
         s_w += gz.sum((0, 1)); s_x += (gz * d).sum((0, 1)); s_x2 += (gz * d * d).sum((0, 1))
     A = (nx / nx.sum(1, keepdim=True)).clamp(1e-6, 1.0)
     A = A / A.sum(1, keepdim=True)
     p0 = (s_p0 / s_p0.sum()).clamp(1e-6, 1.0)
-    pi = (s_gz / s_g.clamp(min=1e-9)).clamp(1e-4, 0.98)
+    a = a + g1 / g2.clamp(min=1e-9)          # шаг Ньютона, целевая по a_s вогнута
     mu = s_x / s_w.clamp(min=1e-9)
     sg = ((s_x2 / s_w.clamp(min=1e-9)) - mu * mu).clamp(min=0.01).sqrt()
     print(f"{it:>9} {tot/NU:18.5f} {time.time()-t0:7.0f}", flush=True)
 
-print(f"\nсостояния: pi={np.round(pi.cpu().numpy(),4)}")
+pv = torch.sigmoid(a + float(np.log(0.05 / 0.95))).cpu().numpy()
+print(f"\nсостояния: a={np.round(a.cpu().numpy(),3)}")
+print(f"           p при среднем клиенте={np.round(pv,4)}")
 print(f"           mu={np.round(mu.cpu().numpy(),3)}  sigma={np.round(sg.cpu().numpy(),3)}")
 print(f"диагональ A: {np.round(torch.diag(A).cpu().numpy(),4)}")
-np.save(OUT / f"x5_hmm_states_K{K}.npy", np.stack([pi.cpu().numpy(), mu.cpu().numpy(),
+np.save(OUT / f"x5_hmm_states_K{K}.npy", np.stack([a.cpu().numpy(), mu.cpu().numpy(),
                                                    sg.cpu().numpy()]))
 print("\ndone")

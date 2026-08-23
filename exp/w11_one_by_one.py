@@ -17,10 +17,11 @@ from common import target, rmsle, NU, OUT
 import re as _re
 # ЛЮБОЙ вектор вида <буква><цифры>_... — кандидат. Перечисление префиксов подводило четырежды:
 # забытый v11 не совпал с "v1_" и уехал В БАЗИС, изменив все вклады. Регулярка не забывается.
-CANDRX = _re.compile(r"^[suvw]\d+_")
+CANDRX = _re.compile(r"^[suvwx]\d+_")
 
 WHO = os.environ.get("WHO", "v9_declm_sel,v10_declm_96,v8_deep_sel,v2_gru96_declm,v7_visit_256")
 LEAK = 1.70
+MAXSC = float(os.environ.get("MAXSC", 1.80))   # потолок для БАЗИСА; кандидат меряется всегда
 y = target(348); ly = np.log1p(y)
 BASE = {}
 PREF = tuple(f"{k}_" for k in ("s6","s7","s8","u1","u2","u3","u4","u5","u6",
@@ -33,7 +34,7 @@ for p in sorted(Path(OUT).glob("*.npy")):
     if v.shape != (NU,) or not np.isfinite(v).all():
         continue
     sc = rmsle(y, np.expm1(np.clip(v - v.mean() + ly.mean(), 0, 13)))
-    if sc >= 1.80 or "fin" in p.stem or sc < LEAK or CANDRX.match(p.stem):
+    if sc >= MAXSC or "fin" in p.stem or sc < LEAK or CANDRX.match(p.stem):
         continue
     BASE[p.stem] = v - v.mean()
 print(f"в базисе {len(BASE)}", flush=True)
@@ -58,7 +59,7 @@ for n in WHO.split(","):
     if not f.exists():
         print(f"{n:>20}   нет файла")
         continue
-    v = np.load(f).astype(np.float64)
+    v = np.load(f).astype(np.float64)   # кандидат не фильтруется потолком
     sc = rmsle(y, np.expm1(np.clip(v - v.mean() + ly.mean(), 0, 13)))
     v = v - v.mean()
     d = fit_eval(cols + [v], *REP) - b
