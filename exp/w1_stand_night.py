@@ -23,7 +23,12 @@ import numpy as np
 from pathlib import Path
 from common import target, rmsle, OUT
 
-PREF = ("s6_", "s7_", "u1_", "u2_", "u3_", "u4_", "v1_", "v2_")
+# ВСЕ ночные префиксы. Пропущенный префикс не выпадает из замера — он попадает В СТЕНД,
+# то есть кандидат оценивается против базиса, куда он сам уже включён. Список сверять при
+# каждом новом скрипте.
+PREF = tuple(f"{k}_" for k in
+             ("s6", "s7", "s8", "u1", "u2", "u3", "u4", "u5", "u6",
+              "v1", "v2", "v3", "v4", "v5"))
 y = target(348); ly = np.log1p(y)
 BASE, CAND, SCORE = {}, {}, {}
 for p in sorted(Path(OUT).glob("*.npy")):
