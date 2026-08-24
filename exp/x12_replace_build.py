@@ -29,7 +29,11 @@ CANDRX = _re.compile(r"^[suvwx]\d+_")
 EL = 2.3284
 SRC = "submissions/stack_v21.csv"
 LEAK = 1.70
-PAIRS = [("daily", "x10_nll", "x10_e2e"), ("event", "v13_ep7", "v13_ep20")]
+# пары задаются переменной: событийная готова (4 сида), дневная ждёт машину.
+# Собирать по одной паре за раз — тогда замер лидербордом однозначен: при смеси двух
+# изменений разной природы непонятно, какая половина сработала, а какая помешала.
+_P = {"event": ("x16_ev_old", "x16_ev_new"), "daily": ("x16_dl_old", "x16_dl_new")}
+PAIRS = [(k, *_P[k]) for k in os.environ.get("PAIRS", "event").split(",")]
 SCALE = float(os.environ.get("SCALE", 1.0))     # общий множитель на осторожность
 
 y = target(348); ly = np.log1p(y)
@@ -94,7 +98,7 @@ for _ in range(90):
         hi = c
 pred = np.clip(np.expm1(t + (lo + hi) / 2), 0, None)
 os.makedirs("submission/queue", exist_ok=True)
-out = f"submission/queue/stack_v22_replace.csv"
+out = "submission/queue/stack_v22_" + "_".join(p[0] for p in PAIRS) + ".csv"
 pl.DataFrame({"user_id": uid, "predict": pred}).write_csv(out)
 print(f"\n{out}")
 print(f"  уровень {np.log1p(pred).mean():.6f}, corr с v21 {np.corrcoef(np.log1p(pred), q)[0,1]:.6f}")
