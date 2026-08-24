@@ -250,11 +250,17 @@ if ref is not None:
 RES = {}
 import os
 assert FIN_EV + H > N_DAYS, "это не финальный якорь — у него есть цель, проверь протокол"
-y = target(SEL_EV); ly = np.log1p(y)
+# ЯКОРЯ ФИКСИРУЮТСЯ ДО ЦИКЛА. Кортеж в for вычисляется на КАЖДОЙ руке, а run("cnn") берёт якоря
+# из глобальных, поэтому их приходится перезаписывать. Без копий после финальной итерации первой
+# руки «выборочный» прогон второй пошёл бы по ФИНАЛЬНОМУ якорю — с прямой утечкой цели. Так и
+# случилось: gated дал 1,53616 вместо ~1,744, что сразу видно по нашему порогу утечки 1,70.
+SEL0_TR, SEL0_EV = list(SEL_TR), SEL_EV
+FIN0_TR, FIN0_EV = list(FIN_TR), FIN_EV
+y = target(SEL0_EV); ly = np.log1p(y)
 print(f"\n{'рука':>10} {'протокол':>9} {'RMSLE':>10} {'сек':>7}", flush=True)
 for var in os.environ.get("Y1ARMS", "base,gated,instnorm,se,bigk").split(","):
     globals()["VARIANT"] = var
-    for tag, TR, EV in (("SELECT", SEL_TR, SEL_EV), ("FINAL", FIN_TR, FIN_EV)):
+    for tag, TR, EV in (("SELECT", SEL0_TR, SEL0_EV), ("FINAL", FIN0_TR, FIN0_EV)):
         globals()["SEL_TR"], globals()["SEL_EV"] = TR, EV
         t0 = time.time()
         try:
@@ -263,6 +269,11 @@ for var in os.environ.get("Y1ARMS", "base,gated,instnorm,se,bigk").split(","):
             torch.cuda.empty_cache()
             print(f"{var:>10} {tag:>9}  ОШИБКА {type(e).__name__}: {str(e)[:50]}", flush=True)
             continue
+        if tag == "SELECT":
+            _s = rmsle(y, np.expm1(np.clip(v - v.mean() + ly.mean(), 0, 13)))
+            # честный выборочный вектор не может быть лучше 1,70: наш рекорд одиночной модели
+            # 1,7356. Меньше — значит модель видела цель, и файл писать нельзя.
+            assert _s > 1.70, f"УТЕЧКА: {var} на SELECT дал {_s:.5f}, проверь якоря"
         nm = f"y1_{var}_" + ("sel" if tag == "SELECT" else "fin")
         np.save(OUT / f"{nm}.npy", v.astype(np.float32))
         msg = f"{rmsle(y, np.expm1(np.clip(v-v.mean()+ly.mean(),0,13))):10.5f}" if tag == "SELECT" else f"{'—':>10}"
