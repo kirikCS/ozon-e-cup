@@ -27,7 +27,7 @@ from common import target, rmsle, NU, OUT
 import re as _re
 # ЛЮБОЙ вектор вида <буква><цифры>_... — кандидат. Перечисление префиксов подводило четырежды:
 # забытый v11 не совпал с "v1_" и уехал В БАЗИС, изменив все вклады. Регулярка не забывается.
-CANDRX = _re.compile(r"^[suvwx]\d+_")
+CANDRX = _re.compile(r"^[suvwxy]\d+_")
 
 EL = 2.3284
 SRC = "submissions/stack_v21.csv"

@@ -17,7 +17,7 @@ from common import target, rmsle, NU, OUT
 import re as _re
 # ЛЮБОЙ вектор вида <буква><цифры>_... — кандидат. Перечисление префиксов подводило четырежды:
 # забытый v11 не совпал с "v1_" и уехал В БАЗИС, изменив все вклады. Регулярка не забывается.
-CANDRX = _re.compile(r"^[suvwx]\d+_")
+CANDRX = _re.compile(r"^[suvwxy]\d+_")
 
 WHO = os.environ.get("WHO", "v9_declm_sel,v10_declm_96,v8_deep_sel,v2_gru96_declm,v7_visit_256")
 LEAK = 1.70
