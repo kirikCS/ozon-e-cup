@@ -1,0 +1,138 @@
+{
+ "_описание": "Базис опоры stack_v12: компоненты с известным генератором. Имя компоненты — имя её генератора. Замеры лежат отдельно, в data/basis_scores.tsv: они нужны солверу, который считает по ним Cov(L,P_j), и переизмерять их не нужно.",
+ "_как_работает": "Cov(L,P_j) = (Var_L + Var(P_j) - R_j^2)/2 по записанному замеру R_j; оптимум C^-1 k с поправкой по реестру и политикой весов max|w|<=0.6.",
+ "_точность": "на 26 компонентах солвер даёт corr 0,999535 с эталонной stack_v12",
+ "компоненты": [
+  {
+   "имя": "make_stack_catboost",
+   "скрипт": "make_stack.py",
+   "есть": true
+  },
+  {
+   "имя": "make_stack_neural",
+   "скрипт": "make_stack.py",
+   "есть": true
+  },
+  {
+   "имя": "active_bagging_test",
+   "скрипт": "d4_active_bagged.py",
+   "есть": true
+  },
+  {
+   "имя": "c5_daily_bagged",
+   "скрипт": "c5_daily_bagged.py",
+   "есть": true
+  },
+  {
+   "имя": "d7_fusion4_bagged",
+   "скрипт": "d7_fusion4_bagged.py",
+   "есть": true
+  },
+  {
+   "имя": "t26_elastic_base",
+   "скрипт": "t26_elastic_base.py",
+   "есть": true
+  },
+  {
+   "имя": "times_emb_28",
+   "скрипт": "t28_ts_emb_final.py",
+   "есть": true
+  },
+  {
+   "имя": "knn_funnel3",
+   "скрипт": "knn_funnel3.py",
+   "есть": true
+  },
+  {
+   "имя": "t24_evgru2",
+   "скрипт": "t24_evgru2_final.py",
+   "есть": true
+  },
+  {
+   "имя": "t27_evgru3",
+   "скрипт": "t27_evgru3_final.py",
+   "есть": true
+  },
+  {
+   "имя": "fx_segprobe",
+   "скрипт": "fx_segprobe.py",
+   "есть": true
+  },
+  {
+   "имя": "t17_tabnn_ft_transformer",
+   "скрипт": "t17_tabnn_zoo.py",
+   "есть": true
+  },
+  {
+   "имя": "t18_heads_hazard",
+   "скрипт": "t18_heads.py",
+   "есть": true
+  },
+  {
+   "имя": "t15_no_calendar",
+   "скрипт": "t15_no_calendar.py",
+   "есть": true
+  },
+  {
+   "имя": "make_stack6_ols",
+   "скрипт": "make_stack6.py",
+   "есть": true
+  },
+  {
+   "имя": "w23_cluster_probe",
+   "скрипт": "w23_cluster_probe.py",
+   "есть": true
+  },
+  {
+   "имя": "p2_lb_probe",
+   "скрипт": "p2_lb_probes.py",
+   "есть": true
+  },
+  {
+   "имя": "t13_rfe_catboost",
+   "скрипт": "t13_rfe_build.py",
+   "есть": true
+  },
+  {
+   "имя": "t13_rfe_lgbm",
+   "скрипт": "t13_rfe_build.py",
+   "есть": true
+  },
+  {
+   "имя": "fx_btyd",
+   "скрипт": "fx_btyd.py",
+   "есть": true
+  },
+  {
+   "имя": "make_stack_dl",
+   "скрипт": "make_stack.py",
+   "есть": true
+  },
+  {
+   "имя": "fx_final_cands",
+   "скрипт": "fx_final_cands.py",
+   "есть": true
+  },
+  {
+   "имя": "x12_replace_build",
+   "скрипт": "x12_replace_build.py",
+   "есть": true
+  },
+  {
+   "имя": "t07_submit_lgbm_dart",
+   "скрипт": "t07_submit.py",
+   "есть": true
+  },
+  {
+   "имя": "t07_submit_btyd",
+   "скрипт": "t07_submit.py",
+   "есть": true
+  },
+  {
+   "имя": "t17_tabnn_tabnet",
+   "скрипт": "t17_tabnn_zoo.py",
+   "есть": true
+  }
+ ],
+ "примечание": "Компоненты, появившиеся позже stack_v23_dir, в базис не входят."
+}

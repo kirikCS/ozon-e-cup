@@ -1,36 +1,20 @@
-# competition data — not redistributed
-data/
+# competition data is not redistributed: put train.parquet into data/
+/data/
 
-# environments and caches
+# outputs of solution/run.py and of the component scripts
+solution/out/
+out/
+cache/
+fs/
+model_out/
+
+# outputs of the EDA pipeline
+eda/cache/
+eda/out/
+
+# environments, caches, local tooling
 .venv/
 __pycache__/
 *.pyc
 .DS_Store
-
-# intermediate leaderboard probes; the six components needed to rebuild the
-# final solution live in release/submission/components/
-submissions/
-
-# release/code duplicates models/ and eda/
-release/code/
-
-# build artefacts
-*.zip
-
-backup/
-
-# handover from teammate: code and docs are kept, heavy artefacts are not
-ecup_handover_2026-08-14/model_out/
-ecup_handover_2026-08-14/submission/
-ecup_handover_2026-08-14/submissions/
-
-# blend manifest is kept (BLEND.md, weights.json, rebuild.py); the component
-# vectors are 79 MB and rebuildable from them
-release_blend/components/
-release_blend/*.csv
-
-# leaderboard vectors at repo root
-/*.csv
-
-# generated leaderboard probes: rebuilt exactly by exp/p3_curvature_probe.py
-submission/queue/
+.claude/

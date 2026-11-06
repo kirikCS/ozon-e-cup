@@ -6,8 +6,8 @@ from pathlib import Path
 import numpy as np
 import polars as pl
 
-CACHE = Path("/private/tmp/claude-501/-Users-kirillmakhankov-Documents-ozon-e-cup/808ae515-06c2-4407-a6fc-a50b3d5b6619/scratchpad/eda")
-OUT = Path("eda_out")
+CACHE = Path("eda/cache")
+OUT = Path("eda/out")
 OUT.mkdir(exist_ok=True)
 D0 = date(2025, 1, 1)
 N_DAYS = 409

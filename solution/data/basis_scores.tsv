@@ -1,0 +1,29 @@
+# Замеры компонент базиса опоры. Всё, что появилось ПОЗЖЕ stack_v23_dir,
+# из базиса исключено: опора не может опираться на собственное будущее.
+# Имя компоненты = имя её генератора из components/basis/.
+make_stack_catboost	1.6491800741215
+make_stack_neural	1.6486126196897
+active_bagging_test	1.6719127381617
+c5_daily_bagged	1.6517935725320
+d7_fusion4_bagged	1.6532965655626
+t26_elastic_base	1.6554303383007
+times_emb_28	1.6529448453629
+knn_funnel3	1.7434601733758
+t24_evgru2	1.6604901643788
+t27_evgru3	1.6562005780843
+fx_segprobe	1.6507897529642
+t17_tabnn_ft_transformer	1.6578283675163
+t18_heads_hazard	1.6641023651857
+t15_no_calendar	1.6535318106642
+make_stack6_ols	1.6508949682829
+w23_cluster_probe	1.6466348735899
+p2_lb_probe	1.6481463046092
+t13_rfe_catboost	1.6546700867030
+t13_rfe_lgbm	1.6561152046375
+fx_btyd	1.7865214092919
+make_stack_dl	1.6483440631886
+fx_final_cands	1.6468560110518
+x12_replace_build	1.6454553434978
+t07_submit_lgbm_dart	1.6723417916510
+t07_submit_btyd	1.6577724728425
+t17_tabnn_tabnet	1.6586426133188

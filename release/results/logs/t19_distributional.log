@@ -1,8 +1,0 @@
-features: 165 cols, anchors [264, 292, 294, 320, 322, 348, 350, 378, 408], per-anchor 165 MB
-  v2: Croston/TSB rates over the full timeline ...
-  v2: 126 features, 126 MB per anchor
-zoo: 296 features, anchors [264, 292, 294, 320, 322, 348, 350, 378, 408]
-=== distributional boosting: 3 моделей (CPU) ===
-
-CatBoost RMSEWithUncertainty
-    probe 2026-01-14: 1.68661  (142s)

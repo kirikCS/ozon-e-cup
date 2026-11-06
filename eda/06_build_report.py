@@ -4,7 +4,7 @@ from pathlib import Path
 
 import polars as pl
 
-OUT = Path("eda_out")
+OUT = Path("eda/out")
 charts = json.load(open(OUT / "chartdata.json"))
 s03 = json.load(open(OUT / "s03_summary.json"))
 

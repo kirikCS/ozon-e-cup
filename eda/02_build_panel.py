@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import polars as pl
 
-CACHE = Path("/private/tmp/claude-501/-Users-kirillmakhankov-Documents-ozon-e-cup/808ae515-06c2-4407-a6fc-a50b3d5b6619/scratchpad/eda")
+CACHE = Path("eda/cache")
 N_DAYS = 409
 
 df = pl.read_parquet(CACHE / "compact.parquet")

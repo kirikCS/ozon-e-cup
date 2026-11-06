@@ -6,8 +6,8 @@ from pathlib import Path
 import polars as pl
 
 SRC = "data/train.parquet"
-CACHE = Path("/private/tmp/claude-501/-Users-kirillmakhankov-Documents-ozon-e-cup/808ae515-06c2-4407-a6fc-a50b3d5b6619/scratchpad/eda")
-OUT = Path("eda_out")
+CACHE = Path("eda/cache")
+OUT = Path("eda/out")
 CACHE.mkdir(parents=True, exist_ok=True)
 OUT.mkdir(parents=True, exist_ok=True)
 

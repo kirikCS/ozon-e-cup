@@ -1,6 +1,0 @@
-features: 165 cols, anchors [146, 174, 202, 230, 236, 258, 264, 288, 292, 320, 348, 378], per-anchor 165 MB
-  BTYD features missing for [146] - skipping them
---- Tier 3b: linear baseline, fixed ---
-  Ridge on log-features -> log1p target (alpha=100)    RMSLE 2.07120 | honest 1.79795  (22.1s)
-  Ridge on log-features -> log1p target (alpha=1000)   RMSLE 2.05190 | honest 1.75687  (22.1s)
-done
